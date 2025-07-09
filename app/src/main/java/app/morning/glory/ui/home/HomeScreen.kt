@@ -1,17 +1,24 @@
 package app.morning.glory.ui.home
 
+import android.app.NotificationChannel
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.morning.glory.notifications.AppNotificationManager
+import app.morning.glory.notifications.NotificationChannelType
+import app.morning.glory.utils.AlarmHelper
 import java.util.*
 
 @Composable
-fun HomeScreen(
-    onSave: (hour: Int, minute: Int) -> Unit = { _, _ -> }
-) {
+fun HomeScreen() {
+    val context = LocalContext.current
+    var alarmSet by remember { mutableStateOf(false) }
     var time by remember { mutableStateOf(Calendar.getInstance()) }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -34,8 +41,31 @@ fun HomeScreen(
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
-            Button(onClick = { onSave(time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE)) }) {
-                Text("Save")
+            Button(
+                onClick = {
+                    val hour = time.get(Calendar.HOUR_OF_DAY)
+                    val minute = time.get(Calendar.MINUTE)
+                    
+                    if (alarmSet) {
+                        AlarmHelper.cancelAlarm(context)
+                        alarmSet = false
+                        Toast.makeText(
+                            context,
+                            "Alarm cancelled",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        AlarmHelper.scheduleAlarm(context, hour, minute)
+                        alarmSet = true
+                        Toast.makeText(
+                            context,
+                            "Alarm set for ${String.format("%02d:%02d", hour, minute)}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            ) {
+                Text(if (alarmSet) "Cancel Alarm" else "Set Alarm")
             }
         }
         if (showDialog) {

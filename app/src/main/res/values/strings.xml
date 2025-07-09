@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Morning Glory</string>
+    
+    <!-- Notification Channels -->
+    <string name="channel_alarms_name">Alarms</string>
+    <string name="channel_alarms_description">Notifications for your alarms</string>
+    <string name="channel_general_name">General</string>
+    <string name="channel_general_description">General notifications</string>
+    
+    <!-- Notification Messages -->
+    <string name="alarm_notification_title">Morning Glory</string>
+    <string name="alarm_notification_content">Good morning! Time to start your day!</string>
 </resources>
