@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:allowBackup="true"
@@ -40,17 +41,13 @@
             android:showWhenLocked="true"
             android:turnScreenOn="true"/>
             
-        <receiver
-            android:name=".receiver.AlarmReceiver"
+        <!-- Alarm Service -->
+        <service
+            android:name=".service.AlarmService"
             android:enabled="true"
-            android:exported="true"
-            android:process=":alarm">
-            <intent-filter>
-                <action android:name="${applicationId}.ALARM_TRIGGERED" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback"
+            android:directBootAware="true" />
     </application>
 
 </manifest>

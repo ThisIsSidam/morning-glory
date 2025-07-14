@@ -10,4 +10,5 @@
     <!-- Notification Messages -->
     <string name="alarm_notification_title">Morning Glory</string>
     <string name="alarm_notification_content">Good morning! Time to start your day!</string>
+    <string name="stop_alarm">Stop</string>
 </resources>

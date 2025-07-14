@@ -9,22 +9,24 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.morning.glory.service.AlarmService
 import app.morning.glory.ui.theme.MorningGloryTheme
 
 class AlarmActivity : ComponentActivity() {
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("AlarmActivity", "onCreate called")
-        
+
         // Turn on the screen and show on lock screen
         turnScreenOnAndShowWhenLocked()
         
@@ -34,7 +36,12 @@ class AlarmActivity : ComponentActivity() {
         
         setContent {
             MorningGloryTheme {
-                AlarmScreen()
+                AlarmScreen(
+                    onDismiss = {
+                        AlarmService.stopService(this@AlarmActivity)
+                        finish()
+                    }
+                )
             }
         }
     }
@@ -43,8 +50,6 @@ class AlarmActivity : ComponentActivity() {
         // Set window flags to show on lock screen and keep screen on
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
             WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
         )
         
@@ -56,21 +61,47 @@ class AlarmActivity : ComponentActivity() {
             keyguardManager.requestDismissKeyguard(this, null)
         }
     }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }
 
 @Composable
-fun AlarmScreen() {
+fun AlarmScreen(
+    onDismiss: () -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.background)
+            .systemBarsPadding(),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Time to Wake Up!",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Time to Wake Up!",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+            
+            Button(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
+                Text("Dismiss", fontSize = 18.sp)
+            }
+        }
     }
 }
+
+@Composable
+private fun Modifier.systemBarsPadding(): Modifier = this

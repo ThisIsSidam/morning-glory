@@ -1,5 +1,6 @@
 package app.morning.glory.notifications
 
+import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -8,7 +9,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import app.morning.glory.MainActivity
 import app.morning.glory.R
-import app.morning.glory.ui.alarm.AlarmActivity
 
 object AppNotificationManager {
     private fun getNotificationManager(context: Context): NotificationManager {
@@ -44,33 +44,30 @@ object AppNotificationManager {
         getNotificationManager(context).notify(notificationId, notification)
     }
 
-    fun showAlarmNotification(context: Context) {
+    fun createAlarmNotification(
+        context: Context,
+        stopPendingIntent: PendingIntent,
+        fullScreenPendingIntent: PendingIntent
+    ): Notification {
         val contentTitle = context.getString(R.string.alarm_notification_title)
         val contentText = context.getString(R.string.alarm_notification_content)
         
-        // Create full-screen intent
-        val intent = Intent(context, AlarmActivity::class.java)
-
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Build the notification
-        val notification = NotificationCompat.Builder(context, NotificationChannelType.ALARMS.id)
+        return NotificationCompat.Builder(context, NotificationChannelType.ALARMS.id)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setFullScreenIntent(pendingIntent, true)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
+            .setFullScreenIntent(fullScreenPendingIntent, true)
+            .setContentIntent(fullScreenPendingIntent)
+            .addAction(
+                R.drawable.ic_launcher_foreground,
+                context.getString(R.string.stop_alarm),
+                stopPendingIntent
+            )
+            .setOngoing(true)
+            .setAutoCancel(false)
             .build()
-            
-        getNotificationManager(context).notify(1, notification)
     }
 }

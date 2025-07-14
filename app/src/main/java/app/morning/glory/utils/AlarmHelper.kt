@@ -4,8 +4,9 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
-import app.morning.glory.receiver.AlarmReceiver
+import app.morning.glory.service.AlarmService
 import java.util.*
 
 object AlarmHelper {
@@ -14,13 +15,29 @@ object AlarmHelper {
     fun scheduleAlarm(context: Context, hour: Int, minute: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
+        val intent = Intent(context, AlarmService::class.java).apply {
             action = "${context.packageName}.ALARM_TRIGGERED"
             putExtra("alarm_time", "$hour:$minute")
         }
         
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        val pendingIntent = PendingIntent.getBroadcast(context, REQUEST_CODE, intent, flags)
+        val pendingIntent =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                PendingIntent.getForegroundService(
+                    context,
+                    REQUEST_CODE,
+                    intent,
+                    flags
+                )
+            } else {
+                PendingIntent.getService(
+                    context,
+                    REQUEST_CODE,
+                    intent,
+                    flags
+                )
+            }
+
         
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
@@ -45,7 +62,7 @@ object AlarmHelper {
 
     fun cancelAlarm(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, AlarmReceiver::class.java)
+        val intent = Intent(context, AlarmService::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             REQUEST_CODE,
