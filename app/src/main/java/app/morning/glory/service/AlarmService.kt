@@ -21,6 +21,7 @@ class AlarmService : Service() {
     private var isRunning = false
     private lateinit var stopReceiver: BroadcastReceiver
 
+    /// Initiate the alarm sound player and register stopp receiver
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate() {
         super.onCreate()
@@ -28,6 +29,7 @@ class AlarmService : Service() {
         registerStopReceiver()
     }
 
+    /// On Trigger: Start playing the sound and show the notification
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             Intent.ACTION_BOOT_COMPLETED,
@@ -66,6 +68,8 @@ class AlarmService : Service() {
         stopAlarm()
     }
 
+    /// If running, stop the alarm sound and remove the foreground notification,
+    /// then stop the service
     fun stopAlarm() {
         if (isRunning) {
             alarmSoundPlayer.stopAlarm()
@@ -75,7 +79,10 @@ class AlarmService : Service() {
         }
     }
 
+    /// Notification for foreground service and the Alarm
     private fun createNotification(): Notification {
+        // Intent to stop alarm, used for the stop button in the notification
+        // It is registered and used in registerStopReceiver method
         val stopIntent = Intent(ACTION_STOP_ALARM)
         val stopPendingIntent = PendingIntent.getBroadcast(
             this,
@@ -84,6 +91,7 @@ class AlarmService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Intent to open the AlarmActivity when the notification is clicked
         val fullScreenIntent = Intent(this, AlarmActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
@@ -101,13 +109,13 @@ class AlarmService : Service() {
         )
     }
 
+    /// Register receiver to stop the alarm
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun registerStopReceiver() {
         stopReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent?.action == ACTION_STOP_ALARM) {
-                    Log.d("AlarmService", "Stop alarm action received")
                     stopAlarm()
                 }
             }

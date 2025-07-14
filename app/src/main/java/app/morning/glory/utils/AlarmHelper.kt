@@ -14,7 +14,8 @@ object AlarmHelper {
 
     fun scheduleAlarm(context: Context, hour: Int, minute: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        
+
+        // Create an intent to trigger the AlarmService
         val intent = Intent(context, AlarmService::class.java).apply {
             action = "${context.packageName}.ALARM_TRIGGERED"
             putExtra("alarm_time", "$hour:$minute")
@@ -38,7 +39,7 @@ object AlarmHelper {
                 )
             }
 
-        
+        // Get the time for the alarm
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, hour)
@@ -50,14 +51,13 @@ object AlarmHelper {
                 add(Calendar.DAY_OF_YEAR, 1)
             }
         }
-        
+
+        // Set the alarm
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
             pendingIntent
         )
-        
-        Log.d("AlarmHelper", "Alarm scheduled for: ${calendar.time}")
     }
 
     fun cancelAlarm(context: Context) {

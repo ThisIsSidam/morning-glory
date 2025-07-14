@@ -30,10 +30,6 @@ class AlarmActivity : ComponentActivity() {
         // Turn on the screen and show on lock screen
         turnScreenOnAndShowWhenLocked()
         
-        // Check if we were launched from a notification
-        val fromNotification = intent?.getBooleanExtra("from_notification", false) ?: false
-        Log.d("AlarmActivity", "Launched from notification: $fromNotification")
-        
         setContent {
             MorningGloryTheme {
                 AlarmScreen(
