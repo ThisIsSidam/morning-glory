@@ -5,8 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
-import app.morning.glory.service.AlarmService
+import app.morning.glory.core.service.AlarmService
 import java.util.*
 
 object AlarmHelper {

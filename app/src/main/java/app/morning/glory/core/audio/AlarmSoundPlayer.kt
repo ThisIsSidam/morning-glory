@@ -1,4 +1,4 @@
-package app.morning.glory.audio
+package app.morning.glory.core.audio
 
 import android.content.Context
 import android.media.AudioAttributes

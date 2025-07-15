@@ -1,4 +1,4 @@
-package app.morning.glory.notifications
+package app.morning.glory.core.notifications
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

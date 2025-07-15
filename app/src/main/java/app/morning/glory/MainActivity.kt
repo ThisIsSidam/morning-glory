@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import app.morning.glory.notifications.NotificationChannelType
+import app.morning.glory.core.notifications.NotificationChannelType
 import app.morning.glory.ui.home.HomeScreen
 import app.morning.glory.ui.theme.MorningGloryTheme
 

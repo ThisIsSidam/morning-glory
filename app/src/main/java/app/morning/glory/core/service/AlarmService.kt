@@ -1,4 +1,4 @@
-package app.morning.glory.service
+package app.morning.glory.core.service
 
 import android.annotation.SuppressLint
 import android.app.Notification
@@ -12,8 +12,8 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
-import app.morning.glory.audio.AlarmSoundPlayer
-import app.morning.glory.notifications.AppNotificationManager
+import app.morning.glory.core.audio.AlarmSoundPlayer
+import app.morning.glory.core.notifications.AppNotificationManager
 import app.morning.glory.ui.alarm.AlarmActivity
 
 class AlarmService : Service() {
@@ -92,9 +92,7 @@ class AlarmService : Service() {
         )
 
         // Intent to open the AlarmActivity when the notification is clicked
-        val fullScreenIntent = Intent(this, AlarmActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        }
+        val fullScreenIntent = Intent(this, AlarmActivity::class.java)
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this,
             0,

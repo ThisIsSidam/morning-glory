@@ -43,7 +43,7 @@
             
         <!-- Alarm Service -->
         <service
-            android:name=".service.AlarmService"
+            android:name=".core.service.AlarmService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback"
