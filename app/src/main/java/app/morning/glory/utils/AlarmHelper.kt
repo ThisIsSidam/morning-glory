@@ -11,13 +11,12 @@ import java.util.*
 object AlarmHelper {
     private const val REQUEST_CODE = 123
 
-    fun scheduleAlarm(context: Context, hour: Int, minute: Int) {
+    fun scheduleAlarm(context: Context, time: Calendar) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Create an intent to trigger the AlarmService
         val intent = Intent(context, AlarmService::class.java).apply {
             action = "${context.packageName}.ALARM_TRIGGERED"
-            putExtra("alarm_time", "$hour:$minute")
         }
         
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -41,8 +40,8 @@ object AlarmHelper {
         // Get the time for the alarm
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
+            set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY))
+            set(Calendar.MINUTE, time.get(Calendar.MINUTE))
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
             

@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Morning Glory</string>
     
+    <!-- UI Elements -->
+    <string name="lock_icon_content_description">Lock</string>
+    
     <!-- Notification Channels -->
     <string name="channel_alarms_name">Alarms</string>
     <string name="channel_alarms_description">Notifications for your alarms</string>
