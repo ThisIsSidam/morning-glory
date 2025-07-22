@@ -8,13 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,10 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.morning.glory.R
 import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.ui.qr_scanner.ScannerActivity
 import com.journeyapps.barcodescanner.ScanContract
@@ -37,12 +31,12 @@ import com.journeyapps.barcodescanner.ScanOptions
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QRCodeManagerSheetBody() {
-    var savedQRs by remember { mutableStateOf(AppPreferences.getSavedCodes())}
+    var alarmCode by remember {mutableStateOf(AppPreferences.alarmCode)}
 
     DisposableEffect(Unit) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == AppPreferences.SAVED_CODES_KEY) {
-                savedQRs = AppPreferences.getSavedCodes()
+            if (key == AppPreferences.ALARM_CODE_KEY) {
+                alarmCode = AppPreferences.alarmCode
             }
         }
         AppPreferences.registerListener(listener)
@@ -62,46 +56,57 @@ fun QRCodeManagerSheetBody() {
             text = "Saved QR Codes",
             style = MaterialTheme.typography.headlineSmall
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (savedQRs.isNotEmpty()) {
-            savedQRs.forEach { qrCode ->
-                QRCodeTile(qrCode = qrCode)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
+        Text(
+            "The alarm QR code makes dismissing the alarm harder. Place it somewhere that forces you to get out of bed to scan it.",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(36.dp))
 
         AddNewQRCode()
+
         Spacer(modifier = Modifier.height(24.dp))
+
+        if (alarmCode != null ) {
+            DeleteExistingCodeButton(alarmCode!!)
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
 @Composable
-fun QRCodeTile(qrCode: String) {
-    ListItem(
-        modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+fun DeleteExistingCodeButton(qrCode: String) {
+    Button(
+        onClick = { AppPreferences.alarmCode = null },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
         ),
-        headlineContent = { Text(qrCode) },
-        leadingContent = {
-            Icon(
-                painter = painterResource(id = R.drawable.outline_qr_code_2_24),
-                contentDescription = "QR Code Icon",
-                tint = MaterialTheme.colorScheme.primary
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text(
+                text = "Delete Existing Code",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer
             )
-        },
-        trailingContent = { 
-            IconButton(
-                onClick = { /* Handle QR Code deletion */ }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_delete_24),
-                    contentDescription = "Delete QR Code Data"
-                )
-            }
+            Text(
+                text = qrCode,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
         }
-    )
+    }
+
 }
 
 @Composable
@@ -112,7 +117,7 @@ fun AddNewQRCode() {
         if (result.contents == null) {
             Log.d("QRScannerScreen", "Scan cancelled")
         } else {
-            AppPreferences.saveCode(result.contents)
+            AppPreferences.alarmCode =  result.contents
         }
     }
 

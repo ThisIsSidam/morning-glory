@@ -8,7 +8,7 @@ object AppPreferences {
     private lateinit var prefs: SharedPreferences
 
     // Keys
-    const val SAVED_CODES_KEY = "saved_codes"
+    const val ALARM_CODE_KEY = "alarm_code"
 
     // Initialize the SharedPreferences instance
     fun init(context: Context) {
@@ -24,14 +24,10 @@ object AppPreferences {
         prefs.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
-    // Methods to get and save codes
-    fun getSavedCodes(): Set<String> {
-        return prefs.getStringSet(SAVED_CODES_KEY, emptySet()) ?: emptySet()
-    }
-
-    fun saveCode(code: String) {
-        val codes = getSavedCodes().toMutableSet()
-        codes.add(code)
-        prefs.edit { putStringSet(SAVED_CODES_KEY, codes) }
-    }
+        /// The code which gets checked on alarms. The alarm does not dismiss without it.
+    var alarmCode: String?
+        get() = prefs.getString(ALARM_CODE_KEY, null)
+        set(value) {
+            prefs.edit { putString(ALARM_CODE_KEY, value) }
+        }
 }
