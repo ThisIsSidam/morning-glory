@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
+import app.morning.glory.ui.qr_scanner.ScannerActivity
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
@@ -88,6 +89,7 @@ fun AddNewQRCode() {
             val options : ScanOptions = ScanOptions().apply {
                 setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
                 setPrompt("Scan a QR Code")
+                setCaptureActivity(ScannerActivity::class.java)
                 setBeepEnabled(true)
             }
             barcodeLauncher.launch(options)
