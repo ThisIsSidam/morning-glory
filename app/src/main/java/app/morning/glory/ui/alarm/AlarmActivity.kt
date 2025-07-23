@@ -4,33 +4,18 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.morning.glory.core.service.AlarmService
+import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.ui.theme.MorningGloryTheme
 
 class AlarmActivity : ComponentActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("AlarmActivity", "onCreate called")
+        AppPreferences.init(this)
 
         // Turn on the screen and show on lock screen
         turnScreenOnAndShowWhenLocked()
@@ -62,45 +47,4 @@ class AlarmActivity : ComponentActivity() {
             keyguardManager.requestDismissKeyguard(this, null)
         }
     }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 }
-
-@Composable
-fun AlarmScreen(
-    onDismiss: () -> Unit = {}
-) {
-    Box(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .systemBarsPadding(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = "Time to Wake Up!",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-            
-            Button(
-                onClick = onDismiss,
-                modifier = Modifier
-                    .height(56.dp)
-            ) {
-                Text("Dismiss", fontSize = 18.sp)
-            }
-        }
-    }
-}
-
-@Composable
-private fun Modifier.systemBarsPadding(): Modifier = this
