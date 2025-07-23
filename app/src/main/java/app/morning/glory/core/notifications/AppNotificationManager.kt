@@ -15,7 +15,6 @@ object AppNotificationManager {
 
     fun createAlarmNotification(
         context: Context,
-        stopPendingIntent: PendingIntent,
         fullScreenPendingIntent: PendingIntent
     ): Notification {
         val contentTitle = context.getString(R.string.alarm_notification_title)
@@ -30,11 +29,6 @@ object AppNotificationManager {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .setContentIntent(fullScreenPendingIntent)
-            .addAction(
-                R.drawable.ic_launcher_foreground,
-                context.getString(R.string.stop_alarm),
-                stopPendingIntent
-            )
             .setOngoing(true)
             .setAutoCancel(false)
             .build()

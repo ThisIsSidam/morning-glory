@@ -61,7 +61,6 @@ fun AlarmScreen(
             if (alarmCode != null) {
                 ScanQRButton(alarmCode!!, onDismiss)
             } else {
-
                 Button(
                     onClick = onDismiss,
                     modifier = Modifier
