@@ -11,7 +11,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,7 +31,6 @@ fun HomeScreenView(
 
     val context = LocalContext.current
     var selectedTime by remember { mutableStateOf(Calendar.getInstance()) }
-    var durationMs by remember { mutableLongStateOf(0L) }
     var is24HourFormat by remember { mutableStateOf(DateFormat.is24HourFormat(context)) }
     var showTimePicker by remember { mutableStateOf(true) }
 
@@ -40,11 +38,15 @@ fun HomeScreenView(
         selectedTime = time
     }
 
-    val onDurationSelected: (Long) -> Unit = { duration ->
-        durationMs = duration
+    val onDurationSelected: (Long) -> Unit = { durationMins ->
+        selectedTime=  Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis() + durationMins
+        }
     }
 
-    Column {
+    Column(
+        modifier = modifier,
+    ) {
 
         // Main Content Row
         Row(
@@ -68,7 +70,6 @@ fun HomeScreenView(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                Log.d("HomeScreen", "showTimePicker: $showTimePicker, selectedTime: $selectedTime, durationMs: $durationMs")
                 if (showTimePicker) {
                     TimePicker(
                         initialTime = selectedTime,
@@ -77,7 +78,7 @@ fun HomeScreenView(
                     )
                 } else {
                     DurationPicker(
-                        initialDuration = durationMs,
+                        initDuration = 7 * 60 + 30,
                         onDurationSelected = onDurationSelected
                     )
                 }
@@ -87,14 +88,8 @@ fun HomeScreenView(
         // Set Alarm Button
         Button(
             onClick = {
-                val alarmTime = if (showTimePicker) {
-                    selectedTime
-                } else {
-                    Calendar.getInstance().apply {
-                        timeInMillis = System.currentTimeMillis() + durationMs
-                    }
-                }
-                AlarmHelper.scheduleAlarm(context, alarmTime)
+                AlarmHelper.scheduleAlarm(context, selectedTime)
+                Log.d("HomeScreenView", "Scheduled time: $selectedTime")
             },
             modifier = Modifier
                 .padding(horizontal = 32.dp, vertical = 16.dp)

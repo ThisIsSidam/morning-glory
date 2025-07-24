@@ -7,23 +7,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+
 @Composable
 fun DurationPicker(
-    initialDuration: Long = 0,
+    /// [initDuration] is duration count in minutes, should be >= 0 and < 24 hours
+    initDuration: Long = 0,
     onDurationSelected: (Long) -> Unit
 ) {
-    var hours by remember { mutableIntStateOf((initialDuration / (60 * 60 * 1000)).toInt()) }
-    var minutes by remember { mutableIntStateOf(((initialDuration % (60 * 60 * 1000)) / (60 * 1000)).toInt()) }
+    require(initDuration >= 0 && initDuration < 24 * 60) { "initDuration should be >= 0 and less than 24 hours"}
 
-    LaunchedEffect(hours, minutes) {
+    var hourPickerState = rememberPickerState()
+    var minutePickerState = rememberPickerState()
+
+    LaunchedEffect(hourPickerState.selectedItem, minutePickerState.selectedItem) {
+        val hours = hourPickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
+        val minutes = minutePickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
         val durationMs = (hours * 60 * 60 * 1000L) + (minutes * 60 * 1000L)
         onDurationSelected(durationMs)
     }
@@ -33,11 +35,11 @@ fun DurationPicker(
         horizontalArrangement = Arrangement.Center,
     ) {
         // Hours Picker
-        NumberPicker(
-            valueMax = 23,
-            valueMin = 0,
-            currentValue = hours,
-            onValueChange = { hours = it },
+        Picker(
+            items = List(23) {it.toString()},
+            startIndex = (initDuration / 60).toInt(),
+            state = hourPickerState,
+            visibleItemsCount = 7,
         )
         Text(
             text = "Hr",
@@ -51,11 +53,11 @@ fun DurationPicker(
         )
 
         // Minutes Picker
-        NumberPicker(
-            valueMax = 59,
-            valueMin = 0,
-            currentValue = minutes,
-            onValueChange = { minutes = it },
+        Picker(
+            items = List(60) {it.toString()},
+            startIndex = (initDuration % 60).toInt(),
+            state = minutePickerState,
+            visibleItemsCount = 7,
         )
         Text(
             text = "Mn",

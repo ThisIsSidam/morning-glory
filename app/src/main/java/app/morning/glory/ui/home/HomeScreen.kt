@@ -32,12 +32,12 @@ fun HomeScreen() {
     )
 
     if (showQRSheet)
-    ModalBottomSheet(
-        onDismissRequest = {showQRSheet = false},
-        sheetState = sheetState,
-    ) {
-        QRCodeManagerSheetBody()
-    }
+        ModalBottomSheet(
+            onDismissRequest = {showQRSheet = false},
+            sheetState = sheetState,
+        ) {
+            QRCodeManagerSheetBody()
+        }
 
     Scaffold(
         topBar = {

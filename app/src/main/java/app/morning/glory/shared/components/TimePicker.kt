@@ -26,9 +26,19 @@ fun TimePicker(
 ) {
     var time by remember { mutableStateOf(initialTime) }
     var isAm by remember { mutableStateOf(time.get(Calendar.AM_PM) == Calendar.AM) }
+    var hourPickerState = rememberPickerState()
+    var minutePickerState = rememberPickerState()
 
-    LaunchedEffect(time) {
-        onTimeSelected(time)
+    LaunchedEffect(hourPickerState.selectedItem, minutePickerState.selectedItem) {
+        val hour = hourPickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
+        val minute = minutePickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
+
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+        }
+
+        onTimeSelected(calendar)
     }
 
     Row(
@@ -36,18 +46,20 @@ fun TimePicker(
         horizontalArrangement = Arrangement.Center
     ) {
         // Hours
-        NumberPicker(
-            valueMax = if (is24HourFormat) 23 else 12,
-            valueMin = if (is24HourFormat) 0 else 1,
-            currentValue = if (is24HourFormat) time.get(Calendar.HOUR_OF_DAY)
+        Picker(
+            items = if (is24HourFormat) List(24) {it.toString()} else List(12) {it.toString()},
+            startIndex = if (is24HourFormat) time.get(Calendar.HOUR_OF_DAY)
             else time.get(Calendar.HOUR).let { if (it == 0) 12 else it },
-            onValueChange = { hour ->
-                val newTime = time.clone() as Calendar
-                newTime.set(Calendar.HOUR_OF_DAY, if (is24HourFormat) hour
-                else if (isAm) if (hour == 12) 0 else hour
-                else if (hour == 12) 12 else hour + 12)
-                time = newTime
-            },
+
+            visibleItemsCount = 7,
+            state = hourPickerState
+//            onValueChange = { hour ->
+//                val newTime = time.clone() as Calendar
+//                newTime.set(Calendar.HOUR_OF_DAY, if (is24HourFormat) hour
+//                else if (isAm) if (hour == 12) 0 else hour
+//                else if (hour == 12) 12 else hour + 12)
+//                time = newTime
+//            },
         )
 
         Text(
@@ -57,15 +69,16 @@ fun TimePicker(
         )
 
         // Minutes
-        NumberPicker(
-            valueMax = 59,
-            valueMin = 0,
-            currentValue = time.get(Calendar.MINUTE),
-            onValueChange = { minute ->
-                val newTime = time.clone() as Calendar
-                newTime.set(Calendar.MINUTE, minute)
-                time = newTime
-            },
+        Picker(
+            items = List(60) {it.toString()},
+            startIndex = time.get(Calendar.MINUTE),
+            visibleItemsCount = 7,
+            state = minutePickerState
+//            onValueChange = { minute ->
+//                val newTime = time.clone() as Calendar
+//                newTime.set(Calendar.MINUTE, minute)
+//                time = newTime
+//            },
         )
 
         // AM/PM Toggle (only for 12-hour format)
