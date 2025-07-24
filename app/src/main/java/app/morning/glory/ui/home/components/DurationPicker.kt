@@ -1,4 +1,4 @@
-package app.morning.glory.shared.components
+package app.morning.glory.ui.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -10,6 +10,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.morning.glory.shared.components.Picker
+import app.morning.glory.shared.components.rememberPickerState
 
 
 @Composable
@@ -36,7 +38,7 @@ fun DurationPicker(
     ) {
         // Hours Picker
         Picker(
-            items = List(23) {it.toString()},
+            items = List(23) { it.toString() },
             startIndex = (initDuration / 60).toInt(),
             state = hourPickerState,
             visibleItemsCount = 7,
@@ -54,7 +56,7 @@ fun DurationPicker(
 
         // Minutes Picker
         Picker(
-            items = List(60) {it.toString()},
+            items = List(60) { it.toString() },
             startIndex = (initDuration % 60).toInt(),
             state = minutePickerState,
             visibleItemsCount = 7,

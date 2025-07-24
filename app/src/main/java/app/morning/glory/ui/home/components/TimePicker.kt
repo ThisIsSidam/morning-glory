@@ -1,4 +1,4 @@
-package app.morning.glory.shared.components
+package app.morning.glory.ui.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,6 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.morning.glory.shared.components.Picker
+import app.morning.glory.shared.components.RadioButtonGroup
+import app.morning.glory.shared.components.rememberPickerState
 import java.util.Calendar
 
 @Composable
@@ -47,7 +50,7 @@ fun TimePicker(
     ) {
         // Hours
         Picker(
-            items = if (is24HourFormat) List(24) {it.toString()} else List(12) {it.toString()},
+            items = if (is24HourFormat) List(24) { it.toString() } else List(12) { it.toString() },
             startIndex = if (is24HourFormat) time.get(Calendar.HOUR_OF_DAY)
             else time.get(Calendar.HOUR).let { if (it == 0) 12 else it },
 
@@ -70,7 +73,7 @@ fun TimePicker(
 
         // Minutes
         Picker(
-            items = List(60) {it.toString()},
+            items = List(60) { it.toString() },
             startIndex = time.get(Calendar.MINUTE),
             visibleItemsCount = 7,
             state = minutePickerState
