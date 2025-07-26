@@ -1,4 +1,4 @@
-package app.morning.glory.utils
+package app.morning.glory.core.utils
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -6,19 +6,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import app.morning.glory.core.service.AlarmService
-import java.util.*
+import java.util.Calendar
 
-object AlarmHelper {
+object AlarmManager {
     private const val REQUEST_CODE = 123
 
-    fun scheduleAlarm(context: Context, time: Calendar) {
+    fun scheduleAlarm(context: Context, time: Calendar, isDaily: Boolean = false) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Create an intent to trigger the AlarmService
         val intent = Intent(context, AlarmService::class.java).apply {
             action = "${context.packageName}.ALARM_TRIGGERED"
         }
-        
+
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         val pendingIntent =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

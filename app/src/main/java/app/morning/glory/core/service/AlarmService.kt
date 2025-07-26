@@ -17,7 +17,7 @@ class AlarmService : Service() {
     private lateinit var alarmSoundPlayer: AlarmSoundPlayer
     private var isRunning = false
 
-    /// Initiate the alarm sound player and register stopp receiver
+    /// Creates the service and initiate the alarm sound player
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate() {
         super.onCreate()
@@ -30,7 +30,7 @@ class AlarmService : Service() {
             Intent.ACTION_BOOT_COMPLETED,
             "android.intent.action.QUICKBOOT_POWERON",
             "com.htc.intent.action.QUICKBOOT_POWERON" -> {
-                // Handle device boot - you might want to reschedule alarms here
+                // TODO: Handle device boot - you might want to reschedule alarms here
                 Log.d("AlarmService", "Device booted, rescheduling alarms")
                 stopSelf()
                 return START_NOT_STICKY

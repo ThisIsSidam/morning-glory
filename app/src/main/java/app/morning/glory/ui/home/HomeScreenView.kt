@@ -18,10 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import app.morning.glory.ui.home.components.DurationPicker
+import app.morning.glory.core.utils.AlarmManager
 import app.morning.glory.shared.components.RadioButtonGroup
+import app.morning.glory.ui.home.components.DurationPicker
 import app.morning.glory.ui.home.components.TimePicker
-import app.morning.glory.utils.AlarmHelper
 import java.util.Calendar
 
 @Composable
@@ -88,7 +88,7 @@ fun HomeScreenView(
         // Set Alarm Button
         Button(
             onClick = {
-                AlarmHelper.scheduleAlarm(context, selectedTime)
+                AlarmManager.scheduleAlarm(context, selectedTime)
                 Log.d("HomeScreenView", "Scheduled time: $selectedTime")
             },
             modifier = Modifier
