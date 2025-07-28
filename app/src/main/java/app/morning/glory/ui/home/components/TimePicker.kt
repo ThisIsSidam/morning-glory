@@ -37,8 +37,9 @@ fun TimePicker(
         val minute = minutePickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
 
         val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.HOUR, hour)
             set(Calendar.MINUTE, minute)
+            set(Calendar.AM_PM, if (isAm) Calendar.AM else Calendar.PM)
         }
 
         onTimeSelected(calendar)

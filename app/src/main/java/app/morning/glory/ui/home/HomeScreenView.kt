@@ -18,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import app.morning.glory.core.utils.AlarmManager
+import app.morning.glory.core.extensions.toReadable
+import app.morning.glory.core.extensions.toast
+import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.shared.components.RadioButtonGroup
 import app.morning.glory.ui.home.components.DurationPicker
 import app.morning.glory.ui.home.components.TimePicker
@@ -86,15 +88,30 @@ fun HomeScreenView(
         }
 
         // Set Alarm Button
-        Button(
-            onClick = {
-                AlarmManager.scheduleAlarm(context, selectedTime)
-                Log.d("HomeScreenView", "Scheduled time: $selectedTime")
-            },
-            modifier = Modifier
-                .padding(horizontal = 32.dp, vertical = 16.dp)
-        ) {
-            Text("Set Alarm")
+        Row {
+            Button(
+                onClick = {
+                    AppAlarmManager.scheduleAlarm(context, selectedTime, isDaily = false)
+                    Log.d("HomeScreenView", "Scheduled time: ${selectedTime.toReadable()}")
+                    context.toast("Scheduled time: ${selectedTime.toReadable()}")
+                },
+                modifier = Modifier
+                    .padding(horizontal = 32.dp, vertical = 16.dp)
+            ) {
+                Text("Set Once-Off Alarm")
+            }
+
+            Button(
+                onClick = {
+                    AppAlarmManager.scheduleAlarm(context, selectedTime, isDaily = true)
+                    Log.d("HomeScreenView", "Scheduled time: ${selectedTime.toReadable()}")
+                    context.toast("Scheduled time: ${selectedTime.toReadable()}")
+                },
+                modifier = Modifier
+                    .padding(horizontal = 32.dp, vertical = 16.dp)
+            ) {
+                Text("Set Daily Alarm")
+            }
         }
     }
 }

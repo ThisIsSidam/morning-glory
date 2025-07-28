@@ -10,8 +10,12 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import app.morning.glory.core.audio.AlarmSoundPlayer
+import app.morning.glory.core.extensions.applyLocalTime
 import app.morning.glory.core.notifications.AppNotificationManager
+import app.morning.glory.core.utils.AppAlarmManager
+import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.ui.alarm.AlarmActivity
+import java.util.Calendar
 
 class AlarmService : Service() {
     private lateinit var alarmSoundPlayer: AlarmSoundPlayer
@@ -67,10 +71,27 @@ class AlarmService : Service() {
     fun stopAlarm() {
         if (isRunning) {
             alarmSoundPlayer.stopAlarm()
+            manageReschedule()
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             isRunning = false
         }
+    }
+
+    private fun manageReschedule()  {
+        val context = applicationContext
+        AppPreferences.init(context)
+        val dailyAlarm = AppPreferences.dailyAlarm
+        if (dailyAlarm != null) {
+            val scheduleTime = Calendar.getInstance().applyLocalTime(dailyAlarm)
+            scheduleTime.add(Calendar.HOUR_OF_DAY, 24)
+            AppAlarmManager.scheduleAlarm(
+                context,
+                scheduleTime,
+                isDaily = true
+            )
+        }
+        AppPreferences.onceOffAlarm = null
     }
 
     /// Notification for foreground service and the Alarm
