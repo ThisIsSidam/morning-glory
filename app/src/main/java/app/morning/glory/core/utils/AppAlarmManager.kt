@@ -47,16 +47,15 @@ object AppAlarmManager {
         }
     }
 
-    fun scheduleAlarm(context: Context, time: Calendar, isDaily: Boolean) {
+    fun scheduleSleepAlarm(context: Context, time: Calendar, isDaily: Boolean) {
         if (isDaily) {
             val oldDaily = AppPreferences.dailyAlarm
             val localTime = time.toLocalTime()
             if (localTime != oldDaily) {
                 AppPreferences.dailyAlarm = localTime
             }
-        } else {
-            AppPreferences.onceOffAlarm = time
         }
+        AppPreferences.sleetAlarmTime = time
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 

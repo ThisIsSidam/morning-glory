@@ -14,9 +14,8 @@ fun SharedPreferences.Editor.putTime(key: String, time: Calendar?) {
 
 fun SharedPreferences.getTime(key: String, defValue: Calendar?) : Calendar? {
     if (!contains(key)) return defValue
-    val sec = getInt(key, -1)
     val timeLong : Long = getLong(key, -1L)
-    return if (sec == -1) defValue else Calendar.getInstance().apply { timeInMillis = timeLong }
+    return if (timeLong == -1L) defValue else Calendar.getInstance().apply { timeInMillis = timeLong }
 }
 
 fun SharedPreferences.Editor.putLocalTime(key: String, time: LocalTime?) {

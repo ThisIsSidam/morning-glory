@@ -23,6 +23,7 @@ import app.morning.glory.core.extensions.toast
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.shared.components.RadioButtonGroup
 import app.morning.glory.ui.home.components.DurationPicker
+import app.morning.glory.ui.home.components.SleepHeader
 import app.morning.glory.ui.home.components.TimePicker
 import java.util.Calendar
 
@@ -48,7 +49,10 @@ fun HomeScreenView(
 
     Column(
         modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        SleepHeader()
 
         // Main Content Row
         Row(
@@ -91,7 +95,7 @@ fun HomeScreenView(
         Row {
             Button(
                 onClick = {
-                    AppAlarmManager.scheduleAlarm(context, selectedTime, isDaily = false)
+                    AppAlarmManager.scheduleSleepAlarm(context, selectedTime, isDaily = false)
                     Log.d("HomeScreenView", "Scheduled time: ${selectedTime.toReadable()}")
                     context.toast("Scheduled time: ${selectedTime.toReadable()}")
                 },
@@ -103,7 +107,7 @@ fun HomeScreenView(
 
             Button(
                 onClick = {
-                    AppAlarmManager.scheduleAlarm(context, selectedTime, isDaily = true)
+                    AppAlarmManager.scheduleSleepAlarm(context, selectedTime, isDaily = true)
                     Log.d("HomeScreenView", "Scheduled time: ${selectedTime.toReadable()}")
                     context.toast("Scheduled time: ${selectedTime.toReadable()}")
                 },

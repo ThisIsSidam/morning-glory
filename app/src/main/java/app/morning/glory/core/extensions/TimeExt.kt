@@ -1,13 +1,11 @@
 package app.morning.glory.core.extensions
 
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.time.LocalTime
 import java.util.Calendar
 import java.util.Locale
 
 fun Calendar.toLocalTime() : LocalTime {
-    Log.d("toLocalTime", "here")
     return LocalTime.of(
         get(Calendar.HOUR_OF_DAY),
         get(Calendar.MINUTE),

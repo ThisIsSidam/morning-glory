@@ -17,7 +17,7 @@ object AppPreferences {
     // Keys
     const val ALARM_CODE_KEY = "alarm_code"
     const val DAILY_SLEEP_ALARM_KEY = "daily_sleep_alarm"
-    const val ONCE_OFF_SLEEP_ALARM_KEY = "once_off_sleep_alarm"
+    const val ALARM_TIME = "sleep_alarm_time"
 
     // Initialize the SharedPreferences instance
     fun init(context: Context) {
@@ -42,19 +42,20 @@ object AppPreferences {
             prefs.edit { putString(ALARM_CODE_KEY, value) }
         }
 
-    /// Saving the time of daily sleep alarm..
-    /// Used for rescheduling after alarm and after reboot
+    /// Saving the local time of daily sleep alarm..
+    /// Used for rescheduling the daily alarms
     var dailyAlarm: LocalTime?
         get() = prefs.getLocalTime(DAILY_SLEEP_ALARM_KEY, null)
         set(value) {
             prefs.edit { putLocalTime(DAILY_SLEEP_ALARM_KEY, value) }
         }
 
-    /// Saving the time of once off sleep alarm...
-    /// Used mainly for rescheduling after reboot
-    var onceOffAlarm: Calendar?
-        get() = prefs.getTime(ONCE_OFF_SLEEP_ALARM_KEY, null)
+    /// Saving the time of sleep alarms...
+    /// Saved when an alarm is scheduled
+    /// Used for rescheduling
+    var sleetAlarmTime: Calendar?
+        get() = prefs.getTime(ALARM_TIME, null)
         set(value) {
-            prefs.edit { putTime(ONCE_OFF_SLEEP_ALARM_KEY, value) }
+            prefs.edit { putTime(ALARM_TIME, value) }
         }
 }

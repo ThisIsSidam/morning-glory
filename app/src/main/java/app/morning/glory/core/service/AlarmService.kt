@@ -81,17 +81,21 @@ class AlarmService : Service() {
     private fun manageReschedule()  {
         val context = applicationContext
         AppPreferences.init(context)
+
+        // Clear current alarm from preferences since the alarm is over.. no current set
+        AppPreferences.sleetAlarmTime = null
+
+        // Check for daily time presence and set new alarm
         val dailyAlarm = AppPreferences.dailyAlarm
         if (dailyAlarm != null) {
             val scheduleTime = Calendar.getInstance().applyLocalTime(dailyAlarm)
             scheduleTime.add(Calendar.HOUR_OF_DAY, 24)
-            AppAlarmManager.scheduleAlarm(
+            AppAlarmManager.scheduleSleepAlarm(
                 context,
                 scheduleTime,
                 isDaily = true
             )
         }
-        AppPreferences.onceOffAlarm = null
     }
 
     /// Notification for foreground service and the Alarm
