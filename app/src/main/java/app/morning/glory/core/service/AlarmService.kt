@@ -14,6 +14,7 @@ import app.morning.glory.core.extensions.applyLocalTime
 import app.morning.glory.core.notifications.AppNotificationManager
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
+import app.morning.glory.core.utils.CustomActions
 import app.morning.glory.ui.alarm.AlarmActivity
 import java.util.Calendar
 
@@ -30,30 +31,19 @@ class AlarmService : Service() {
 
     /// On Trigger: Start playing the sound and show the notification
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
-            Intent.ACTION_BOOT_COMPLETED,
-            "android.intent.action.QUICKBOOT_POWERON",
-            "com.htc.intent.action.QUICKBOOT_POWERON" -> {
-                // TODO: Handle device boot - you might want to reschedule alarms here
-                Log.d("AlarmService", "Device booted, rescheduling alarms")
-                stopSelf()
-                return START_NOT_STICKY
+        if (intent?.action == CustomActions.alarmTriggered(applicationContext)) {
+            if (isRunning) {
+                Log.d("AlarmService", "Alarm already running")
+                return START_STICKY
             }
-            "${applicationContext.packageName}.ALARM_TRIGGERED" -> {
-                if (isRunning) {
-                    Log.d("AlarmService", "Alarm already running")
-                    return START_STICKY
-                }
 
-                isRunning = true
-                
-                // Start in foreground with a notification
-                startForeground(111, createNotification())
-                
-                // Start playing the alarm sound
-                alarmSoundPlayer.playAlarm()
+            isRunning = true
 
-            }
+            // Start in foreground with a notification
+            startForeground(111, createNotification())
+
+            // Start playing the alarm sound
+            alarmSoundPlayer.playAlarm()
         }
 
         return START_STICKY

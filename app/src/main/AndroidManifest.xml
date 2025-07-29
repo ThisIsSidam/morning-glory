@@ -54,14 +54,23 @@
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
             android:turnScreenOn="true"/>
-            
-        <!-- Alarm Service -->
+
         <service
             android:name=".core.service.AlarmService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback"
             android:directBootAware="true" />
+
+        <receiver android:name=".core.receivers.BootReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

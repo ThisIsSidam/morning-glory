@@ -16,7 +16,7 @@ object AppAlarmManager {
      */
     fun getPendingIntent(context: Context) : PendingIntent {
         val intent = Intent(context, AlarmService::class.java).apply {
-            action = "${context.packageName}.ALARM_TRIGGERED"
+            action = CustomActions.alarmTriggered(context)
         }
 
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
