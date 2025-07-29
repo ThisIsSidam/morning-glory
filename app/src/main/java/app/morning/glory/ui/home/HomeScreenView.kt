@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.morning.glory.shared.components.RadioButtonGroup
-import app.morning.glory.ui.home.components.DurationPicker
 import app.morning.glory.ui.home.components.ButtonSection
+import app.morning.glory.ui.home.components.DurationPicker
 import app.morning.glory.ui.home.components.SleepHeader
 import app.morning.glory.ui.home.components.TimePicker
 import java.util.Calendar
@@ -43,16 +46,20 @@ fun HomeScreenView(
     }
 
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
 
+        Spacer(modifier = Modifier.weight(4f))
+
         SleepHeader()
+
+        Spacer(modifier = Modifier.weight(1f))
 
         // Main Content Row
         Row(
             modifier = Modifier
-                .weight(1f)
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -66,9 +73,10 @@ fun HomeScreenView(
                 }
             )
 
+            Spacer(modifier = Modifier.width(24.dp))
+
             // Picker in the center
             Box(
-                modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
                 if (showTimePicker) {
@@ -86,7 +94,11 @@ fun HomeScreenView(
             }
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+
         ButtonSection(selectedTime, context)
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 

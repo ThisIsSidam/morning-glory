@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
+import app.morning.glory.shared.components.RListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

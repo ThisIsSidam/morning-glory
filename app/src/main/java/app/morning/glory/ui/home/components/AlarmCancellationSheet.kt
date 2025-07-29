@@ -26,6 +26,7 @@ import app.morning.glory.core.extensions.toReadable
 import app.morning.glory.core.extensions.toast
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
+import app.morning.glory.shared.components.RListItem
 import java.time.LocalTime
 import java.util.Calendar
 
@@ -92,7 +93,12 @@ fun AlarmCancellationSheet(
 
             if (dailyAlarm == null) { // Case A: Only a single, one-off alarm
                 RListItem(
-                    headlineContent = { Text("Cancel This Alarm", fontWeight = FontWeight.SemiBold) },
+                    headlineContent = {
+                        Text(
+                            "Cancel This Alarm",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
                     supportingContent = { Text("The upcoming alarm will be removed.") },
                     modifier = Modifier.clickable(onClick = { onCancelOnceOff() })
                 )
@@ -100,29 +106,54 @@ fun AlarmCancellationSheet(
             else if (dailyAlarm == setAlarmTime.toLocalTime()) { // Case B: Daily alarm is set
                 Log.d("AlarmCancelSheet", "${dailyAlarm} : ${setAlarmTime.toLocalTime()}")
                 RListItem(
-                    headlineContent = { Text("Skip Tomorrow's Alarm", fontWeight = FontWeight.SemiBold) },
+                    headlineContent = {
+                        Text(
+                            "Skip Tomorrow's Alarm",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
                     supportingContent = { Text("Your daily schedule will resume the day after.") },
                     modifier = Modifier.clickable(onClick = { onSkipTomorrow() })
                 )
                 RListItem(
-                    headlineContent = { Text("Turn Off Daily Alarm", fontWeight = FontWeight.SemiBold) },
+                    headlineContent = {
+                        Text(
+                            "Turn Off Daily Alarm",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
                     supportingContent = { Text("This will permanently delete the repeating alarm.") },
                     modifier = Modifier.clickable(onClick = { onDeleteDaily() })
                 )
             } else if (dailyAlarm != setAlarmTime.toLocalTime()) { // Case C: Daily alarm with a one-off override for tomorrow
                 Log.d("AlarmCancelSheet", "${dailyAlarm} : ${setAlarmTime.toLocalTime()}")
                 RListItem(
-                    headlineContent = { Text("Use Daily Time Instead", fontWeight = FontWeight.SemiBold) },
+                    headlineContent = {
+                        Text(
+                            "Use Daily Time Instead",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
                     supportingContent = { Text("Reverts to your normally scheduled alarm time.") },
                     modifier = Modifier.clickable(onClick = { onCancelOnceOffAndRevertToDaily() })
                 )
                 RListItem(
-                    headlineContent = { Text("Skip Tomorrow's Alarm", fontWeight = FontWeight.SemiBold) },
+                    headlineContent = {
+                        Text(
+                            "Skip Tomorrow's Alarm",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
                     supportingContent = { Text("No alarm will ring tomorrow at all.") },
                     modifier = Modifier.clickable(onClick = { onSkipTomorrow() })
                 )
                 RListItem(
-                    headlineContent = { Text("Turn Off Daily Alarm", fontWeight = FontWeight.SemiBold) },
+                    headlineContent = {
+                        Text(
+                            "Turn Off Daily Alarm",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
                     supportingContent = { Text("Deletes the custom time and the entire daily schedule.") },
                     modifier = Modifier.clickable(onClick = { onDeleteDaily() })
                 )

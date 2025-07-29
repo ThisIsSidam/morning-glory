@@ -40,6 +40,13 @@ fun RadioButtonGroup(
             ) {
                 Text(
                     text = text,
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        color = if (text == selectedOption) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
+                    ),
                     modifier = Modifier
                         .clip(
                             shape = RoundedCornerShape(
