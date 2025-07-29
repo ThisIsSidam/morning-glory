@@ -34,13 +34,13 @@ fun ButtonSection(
     context: Context,
 ) {
     var showSheet by remember { mutableStateOf(ShowSheet.NONE) }
-    var setAlarmTime by remember {mutableStateOf(AppPreferences.sleetAlarmTime) }
+    var setAlarmTime by remember {mutableStateOf(AppPreferences.sleepAlarmTime) }
     var dailyAlarm by remember {mutableStateOf(AppPreferences.dailyAlarm)}
 
     DisposableEffect(Unit) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == AppPreferences.ALARM_TIME) {
-                setAlarmTime = AppPreferences.sleetAlarmTime
+                setAlarmTime = AppPreferences.sleepAlarmTime
             } else if (key == AppPreferences.DAILY_SLEEP_ALARM_KEY) {
                 dailyAlarm = AppPreferences.dailyAlarm
             }

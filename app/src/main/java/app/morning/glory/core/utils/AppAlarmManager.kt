@@ -49,7 +49,7 @@ object AppAlarmManager {
                 AppPreferences.dailyAlarm = localTime
             }
         }
-        AppPreferences.sleetAlarmTime = truncatedTime
+        AppPreferences.sleepAlarmTime = truncatedTime
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -62,7 +62,7 @@ object AppAlarmManager {
 
     fun cancelAlarm(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        AppPreferences.sleetAlarmTime = null
+        AppPreferences.sleepAlarmTime = null
         val pendingIntent = getPendingIntent(context)
 
         alarmManager.cancel(pendingIntent)

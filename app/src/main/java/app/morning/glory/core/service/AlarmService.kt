@@ -73,7 +73,7 @@ class AlarmService : Service() {
         AppPreferences.init(context)
 
         // Clear current alarm from preferences since the alarm is over.. no current set
-        AppPreferences.sleetAlarmTime = null
+        AppPreferences.sleepAlarmTime = null
 
         // Check for daily time presence and set new alarm
         val dailyAlarm = AppPreferences.dailyAlarm

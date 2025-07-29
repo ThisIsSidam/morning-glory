@@ -53,7 +53,7 @@ object AppPreferences {
     /// Saving the time of sleep alarms...
     /// Saved when an alarm is scheduled
     /// Used for rescheduling
-    var sleetAlarmTime: Calendar?
+    var sleepAlarmTime: Calendar?
         get() = prefs.getTime(ALARM_TIME, null)
         set(value) {
             prefs.edit { putTime(ALARM_TIME, value) }

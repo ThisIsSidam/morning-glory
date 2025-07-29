@@ -18,7 +18,7 @@ class BootReceiver : BroadcastReceiver() {
     }
 
     private fun rescheduleAlarms(context: Context) {
-        val alarmTime = AppPreferences.sleetAlarmTime
+        val alarmTime = AppPreferences.sleepAlarmTime
         if (alarmTime != null) {
             // isDaily is used to save the localTime in prefs that is already
             // done when the alarm was initially scheduled, keeping false
