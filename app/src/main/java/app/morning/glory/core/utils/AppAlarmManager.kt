@@ -30,44 +30,39 @@ object AppAlarmManager {
     }
 
     /**
-     * Used to truncate time to minutes..
-     * Values of second and millisecond are replaced with 0
+     * Clones a Calendar instance and truncates its time to the minute.
+     * Values of second and millisecond are replaced with 0.
      */
-    fun getTruncatedTime(time: Calendar) : Calendar {
-        return Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY))
-            set(Calendar.MINUTE, time.get(Calendar.MINUTE))
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-
-            if (timeInMillis <= System.currentTimeMillis()) {
-                add(Calendar.DAY_OF_YEAR, 1)
-            }
-        }
+    fun getTruncatedTime(time: Calendar): Calendar {
+        val newTime = time.clone() as Calendar
+        newTime.set(Calendar.SECOND, 0)
+        newTime.set(Calendar.MILLISECOND, 0)
+        return newTime
     }
 
     fun scheduleSleepAlarm(context: Context, time: Calendar, isDaily: Boolean) {
+        val truncatedTime = getTruncatedTime(time)
         if (isDaily) {
             val oldDaily = AppPreferences.dailyAlarm
-            val localTime = time.toLocalTime()
+            val localTime = truncatedTime.toLocalTime()
             if (localTime != oldDaily) {
                 AppPreferences.dailyAlarm = localTime
             }
         }
-        AppPreferences.sleetAlarmTime = time
+        AppPreferences.sleetAlarmTime = truncatedTime
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            getTruncatedTime(time).timeInMillis,
+            truncatedTime.timeInMillis,
             getPendingIntent(context)
         )
     }
 
     fun cancelAlarm(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        AppPreferences.sleetAlarmTime = null
         val pendingIntent = getPendingIntent(context)
 
         alarmManager.cancel(pendingIntent)

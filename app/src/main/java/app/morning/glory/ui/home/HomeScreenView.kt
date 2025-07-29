@@ -1,14 +1,11 @@
 package app.morning.glory.ui.home
 
 import android.text.format.DateFormat
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,11 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import app.morning.glory.core.extensions.toReadable
-import app.morning.glory.core.extensions.toast
-import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.shared.components.RadioButtonGroup
 import app.morning.glory.ui.home.components.DurationPicker
+import app.morning.glory.ui.home.components.ButtonSection
 import app.morning.glory.ui.home.components.SleepHeader
 import app.morning.glory.ui.home.components.TimePicker
 import java.util.Calendar
@@ -91,34 +86,8 @@ fun HomeScreenView(
             }
         }
 
-        // Set Alarm Button
-        Row {
-            Button(
-                onClick = {
-                    AppAlarmManager.scheduleSleepAlarm(context, selectedTime, isDaily = false)
-                    Log.d("HomeScreenView", "Scheduled time: ${selectedTime.toReadable()}")
-                    context.toast("Scheduled time: ${selectedTime.toReadable()}")
-                },
-                modifier = Modifier
-                    .padding(horizontal = 32.dp, vertical = 16.dp)
-            ) {
-                Text("Set Once-Off Alarm")
-            }
-
-            Button(
-                onClick = {
-                    AppAlarmManager.scheduleSleepAlarm(context, selectedTime, isDaily = true)
-                    Log.d("HomeScreenView", "Scheduled time: ${selectedTime.toReadable()}")
-                    context.toast("Scheduled time: ${selectedTime.toReadable()}")
-                },
-                modifier = Modifier
-                    .padding(horizontal = 32.dp, vertical = 16.dp)
-            ) {
-                Text("Set Daily Alarm")
-            }
-        }
+        ButtonSection(selectedTime, context)
     }
 }
-
 
 

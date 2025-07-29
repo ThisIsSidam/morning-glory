@@ -18,8 +18,6 @@ import app.morning.glory.core.utils.AppPreferences
 
 @Composable
 fun SleepHeader() {
-
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
