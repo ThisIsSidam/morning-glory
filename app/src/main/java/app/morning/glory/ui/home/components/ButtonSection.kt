@@ -1,6 +1,5 @@
 package app.morning.glory.ui.home.components
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.morning.glory.core.extensions.toReadable
 import app.morning.glory.core.extensions.toast
@@ -29,10 +29,9 @@ enum class ShowSheet {
 }
 
 @Composable
-fun ButtonSection(
-    time: Calendar,
-    context: Context,
-) {
+fun ButtonSection(time: Calendar) {
+
+    val context = LocalContext.current
     var showSheet by remember { mutableStateOf(ShowSheet.NONE) }
     var setAlarmTime by remember {mutableStateOf(AppPreferences.sleepAlarmTime) }
     var dailyAlarm by remember {mutableStateOf(AppPreferences.dailyAlarm)}

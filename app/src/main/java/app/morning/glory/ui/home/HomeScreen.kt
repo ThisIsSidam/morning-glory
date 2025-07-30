@@ -21,7 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import app.morning.glory.R
+import app.morning.glory.ui.home.components.ButtonSection
 import app.morning.glory.ui.home.components.QRCodeManagerSheetBody
+import app.morning.glory.ui.home.components.SleepHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +70,8 @@ fun HomeScreen() {
     )  { innerPadding ->
         HomeScreenView(
             modifier = Modifier.padding(innerPadding),
+            headerComposable = { SleepHeader() },
+            buttonsComposable = { time ->  ButtonSection(time) }
         )
     }
 }

@@ -19,15 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.morning.glory.shared.components.RadioButtonGroup
-import app.morning.glory.ui.home.components.ButtonSection
 import app.morning.glory.ui.home.components.DurationPicker
-import app.morning.glory.ui.home.components.SleepHeader
 import app.morning.glory.ui.home.components.TimePicker
 import java.util.Calendar
 
 @Composable
 fun HomeScreenView(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    headerComposable: @Composable () -> Unit,
+    buttonsComposable: @Composable (Calendar) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -53,7 +53,7 @@ fun HomeScreenView(
 
         Spacer(modifier = Modifier.weight(4f))
 
-        SleepHeader()
+        headerComposable()
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -96,7 +96,7 @@ fun HomeScreenView(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        ButtonSection(selectedTime, context)
+        buttonsComposable(selectedTime)
 
         Spacer(modifier = Modifier.weight(1f))
     }
