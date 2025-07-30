@@ -40,7 +40,7 @@ fun RadioButtonGroup(
             ) {
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.labelMedium.copy(
+                    style = MaterialTheme.typography.bodyLarge.copy(
                         color = if (text == selectedOption) {
                             MaterialTheme.colorScheme.onPrimary
                         } else {

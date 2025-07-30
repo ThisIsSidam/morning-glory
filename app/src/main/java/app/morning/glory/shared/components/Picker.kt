@@ -4,7 +4,7 @@ import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,7 +44,7 @@ fun Picker(
     startIndex: Int = 0,
     visibleItemsCount : Int = 5,
     textModifier: Modifier = Modifier,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
 ) {
     val visibleItemsMiddle = visibleItemsCount / 2
     val listScrollCount = Integer.MAX_VALUE
