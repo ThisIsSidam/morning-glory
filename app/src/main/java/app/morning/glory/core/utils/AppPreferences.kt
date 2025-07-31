@@ -14,12 +14,6 @@ object AppPreferences {
     private lateinit var prefs: SharedPreferences
     var isInitialized : Boolean = false
 
-    // Keys
-    const val ALARM_CODE_KEY = "alarm_code"
-    const val DAILY_SLEEP_ALARM_KEY = "daily_sleep_alarm"
-    const val ALARM_TIME = "sleep_alarm_time"
-    const val NAP_TIME = "nap_alarm_time"
-
     // Initialize the SharedPreferences instance
     fun init(context: Context) {
         if (isInitialized) return
@@ -36,12 +30,24 @@ object AppPreferences {
         prefs.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
-    /// Setters and Getters for various values used
+
+
+    /**
+     * The QR Code value used for locking dismiss
+     */
+    const val ALARM_CODE_KEY = "alarm_code"
     var alarmCode: String?
         get() = prefs.getString(ALARM_CODE_KEY, null)
         set(value) {
             prefs.edit { putString(ALARM_CODE_KEY, value) }
         }
+
+
+
+    /**
+     * The key for local time used to set daily alarms
+     */
+    const val DAILY_SLEEP_ALARM_KEY = "daily_sleep_alarm"
 
     /// Saving the local time of daily sleep alarm..
     /// Used for rescheduling the daily alarms
@@ -51,21 +57,59 @@ object AppPreferences {
             prefs.edit { putLocalTime(DAILY_SLEEP_ALARM_KEY, value) }
         }
 
-    /// Saving the time of sleep alarms...
-    /// Saved when an alarm is scheduled
-    /// Used for rescheduling
+
+    /**
+     * The key for saving sleep alarm time
+     */
+    const val ALARM_TIME = "sleep_alarm_time"
+
+    /**
+     * Saving the time of sleep alarms...
+     * Saved when an alarm is scheduled
+     * Used for rescheduling
+     */
     var sleepAlarmTime: Calendar?
         get() = prefs.getTime(ALARM_TIME, null)
         set(value) {
             prefs.edit { putTime(ALARM_TIME, value) }
         }
 
-    /// Saving the time of sleep alarms...
-    /// Saved when an alarm is scheduled
-    /// Used for rescheduling
+
+
+    /**
+     * The key for saving nap alarm time
+     */
+    const val NAP_TIME = "nap_alarm_time"
+
+    /**
+     * Saving the time of sleep alarms...
+     * Saved when an alarm is scheduled
+     * Used for rescheduling
+     */
     var napAlarmTime: Calendar?
         get() = prefs.getTime(NAP_TIME, null)
         set(value) {
             prefs.edit { putTime(NAP_TIME, value) }
+        }
+
+
+
+
+
+    // The key, getter and setter for displaying time or duration of the upcoming alarm
+
+    const val DISPLAY_SLEEP_DURATION_HINT_KEY = "sleep_time_hint"
+    const val DISPLAY_NAP_DURATION_HINT_KEY = "nap_time_hint"
+
+    var displaySleepDuration : Boolean
+        get() = prefs.getBoolean(DISPLAY_SLEEP_DURATION_HINT_KEY, false)
+        set(value) {
+            prefs.edit { putBoolean(DISPLAY_SLEEP_DURATION_HINT_KEY, value) }
+        }
+
+    var displayNapDuration : Boolean
+        get() = prefs.getBoolean(DISPLAY_NAP_DURATION_HINT_KEY, false)
+        set(value) {
+            prefs.edit { putBoolean(DISPLAY_NAP_DURATION_HINT_KEY, value) }
         }
 }

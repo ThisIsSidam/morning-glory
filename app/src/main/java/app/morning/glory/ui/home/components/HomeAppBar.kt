@@ -121,7 +121,7 @@ fun HomeTab(
             )
         },
         modifier = Modifier
-            .padding(horizontal = 4.dp, vertical = 6.dp)
+            .padding(horizontal = 4.dp, vertical = 4.dp)
             .clip(RoundedCornerShape(24))
             .background(
                 color = if (isSelected) {

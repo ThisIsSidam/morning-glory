@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat
 import java.time.LocalTime
 import java.util.Calendar
 import java.util.Locale
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 fun Calendar.toLocalTime() : LocalTime {
     return LocalTime.of(
@@ -39,4 +41,20 @@ fun Calendar.truncateToSeconds(): Calendar {
     newTime.set(Calendar.SECOND, 0)
     newTime.set(Calendar.MILLISECOND, 0)
     return newTime
+}
+
+fun Calendar.difference(other: Calendar) : Duration {
+    val millisInt = other.timeInMillis - timeInMillis
+    return millisInt.milliseconds
+}
+
+fun Calendar.formattedDuration(other : Calendar = Calendar.getInstance()) : String {
+    val dur = other.difference(this)
+
+    return dur.toComponents { hours, minutes, seconds, nanoseconds ->
+        if (hours == 0L) {
+            return "$minutes Min"
+        }
+        return "$hours Hr $minutes Min"
+    }
 }
