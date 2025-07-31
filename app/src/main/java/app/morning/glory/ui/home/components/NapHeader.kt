@@ -34,12 +34,12 @@ fun NapHeader() {
 
 @Composable
 fun NextNapAlarmText() {
-    var nextAlarmTime = remember {mutableStateOf(AppPreferences.sleepAlarmTime)}
+    var nextAlarmTime = remember {mutableStateOf(AppPreferences.napAlarmTime)}
 
     DisposableEffect(Unit) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == AppPreferences.NAP_TIME) {
-                nextAlarmTime.value = AppPreferences.sleepAlarmTime
+                nextAlarmTime.value = AppPreferences.napAlarmTime
             }
         }
 

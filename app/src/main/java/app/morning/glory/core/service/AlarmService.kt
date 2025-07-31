@@ -70,22 +70,31 @@ class AlarmService : Service() {
     /// then stop the service
     fun stopAlarm() {
         if (isRunning) {
+
+            // Initialized preferences
+            val context = applicationContext
+            AppPreferences.init(context)
+
             alarmSoundPlayer.stopAlarm()
-            if (alarmType == AlarmType.SLEEP) manageReschedule()
+
+            // Clear the saved alarm time and reschedule in case of sleep alarm
+            when (alarmType) {
+                AlarmType.SLEEP -> {
+                    AppPreferences.sleepAlarmTime = null
+                    manageReschedule(context)
+                }
+                AlarmType.NAP -> AppPreferences.napAlarmTime = null
+            }
+
+            // Stop foreground and then service
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             isRunning = false
         }
     }
 
-    private fun manageReschedule()  {
-        val context = applicationContext
-        AppPreferences.init(context)
-
-        // Clear current alarm from preferences since the alarm is over.. no current set
-        AppPreferences.sleepAlarmTime = null
-
-        // Check for daily time presence and set new alarm
+    /// Check for daily time presence and set new alarm
+    private fun manageReschedule(context: Context)  {
         val dailyAlarm = AppPreferences.dailyAlarm
         if (dailyAlarm != null) {
             val scheduleTime = Calendar.getInstance().applyLocalTime(dailyAlarm)
