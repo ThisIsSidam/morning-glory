@@ -1,77 +1,50 @@
 package app.morning.glory.ui.home
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import app.morning.glory.R
 import app.morning.glory.ui.home.components.ButtonSection
-import app.morning.glory.ui.home.components.QRCodeManagerSheetBody
+import app.morning.glory.ui.home.components.HomeAppBar
+import app.morning.glory.ui.home.components.NapButtons
+import app.morning.glory.ui.home.components.NapHeader
 import app.morning.glory.ui.home.components.SleepHeader
+
+enum class HomeView(val title: String) {
+    SLEEP("Sleep"),
+    NAP("Nap")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
 
-    var showQRSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-    )
-
-    if (showQRSheet)
-        ModalBottomSheet(
-            onDismissRequest = {showQRSheet = false},
-            sheetState = sheetState,
-        ) {
-            QRCodeManagerSheetBody()
-        }
+    var pagerState = rememberPagerState { HomeView.entries.size }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("Morning Glory")
-                },
-                actions = {
-                    IconButton(onClick = {
-                        showQRSheet = true
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = stringResource(R.string.lock_icon_content_description)
-                        )
-                    }
-                },
-                colors = TopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    actionIconContentColor = MaterialTheme.colorScheme.primary,
-                    scrolledContainerColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary,
-                )
-            )
-        }
+        topBar = { HomeAppBar(pagerState) }
     )  { innerPadding ->
-        HomeScreenView(
-            modifier = Modifier.padding(innerPadding),
-            headerComposable = { SleepHeader() },
-            buttonsComposable = { time ->  ButtonSection(time) }
-        )
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.padding(innerPadding)
+        ) { page ->
+
+            val view = HomeView.entries[page]
+
+            when (view) {
+                HomeView.SLEEP -> HomeScreenView(
+                    headerComposable = { SleepHeader() },
+                    buttonsComposable = { time ->  ButtonSection(time) }
+                )
+                HomeView.NAP -> HomeScreenView(
+                    headerComposable = { NapHeader() },
+                    buttonsComposable = { time -> NapButtons(time) }
+                )
+            }
+        }
     }
 }
+

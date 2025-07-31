@@ -51,7 +51,7 @@ fun HomeScreenView(
         verticalArrangement = Arrangement.Center
     ) {
 
-        Spacer(modifier = Modifier.weight(4f))
+        Spacer(modifier = Modifier.weight(2f))
 
         headerComposable()
 
