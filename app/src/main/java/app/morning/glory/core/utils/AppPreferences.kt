@@ -18,6 +18,7 @@ object AppPreferences {
     const val ALARM_CODE_KEY = "alarm_code"
     const val DAILY_SLEEP_ALARM_KEY = "daily_sleep_alarm"
     const val ALARM_TIME = "sleep_alarm_time"
+    const val NAP_TIME = "nap_alarm_time"
 
     // Initialize the SharedPreferences instance
     fun init(context: Context) {
@@ -57,5 +58,14 @@ object AppPreferences {
         get() = prefs.getTime(ALARM_TIME, null)
         set(value) {
             prefs.edit { putTime(ALARM_TIME, value) }
+        }
+
+    /// Saving the time of sleep alarms...
+    /// Saved when an alarm is scheduled
+    /// Used for rescheduling
+    var napAlarmTime: Calendar?
+        get() = prefs.getTime(NAP_TIME, null)
+        set(value) {
+            prefs.edit { putTime(NAP_TIME, value) }
         }
 }

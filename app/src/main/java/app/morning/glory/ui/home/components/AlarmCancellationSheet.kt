@@ -24,6 +24,7 @@ import app.morning.glory.core.extensions.applyLocalTime
 import app.morning.glory.core.extensions.toLocalTime
 import app.morning.glory.core.extensions.toReadable
 import app.morning.glory.core.extensions.toast
+import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.shared.components.RListItem
@@ -44,16 +45,14 @@ fun AlarmCancellationSheet(
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     fun onCancelOnceOff() {
-        AppAlarmManager.cancelAlarm(context)
+        AppAlarmManager.cancelAlarm(context, AlarmType.SLEEP)
         onDismiss()
     }
 
     fun onSkipTomorrow() {
         val time : Calendar = setAlarmTime
-        Log.d("AlarmCancellationSheet", "Skipping | time: ${time.toReadable()}")
         time.add(Calendar.HOUR_OF_DAY, 24)
-        Log.d("AlarmCancellationSheet", "Skipping | time: ${time.toReadable()}")
-        AppAlarmManager.scheduleSleepAlarm(context, time, isDaily = true)
+        AppAlarmManager.scheduleAlarm(context, time, AlarmType.SLEEP)
         context.toast("Scheduled time: ${time.toReadable()}")
         onDismiss()
     }
@@ -66,7 +65,7 @@ fun AlarmCancellationSheet(
     fun onCancelOnceOffAndRevertToDaily() {
         require(dailyAlarm != null, { "Can't revert to daily, daily alarm value is null" })
         setAlarmTime.applyLocalTime(dailyAlarm)
-        AppAlarmManager.scheduleSleepAlarm(context, setAlarmTime, isDaily = false)
+        AppAlarmManager.scheduleAlarm(context, setAlarmTime, AlarmType.SLEEP)
         context.toast("Scheduled time: ${setAlarmTime.toReadable()}")
         onDismiss()
     }

@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.morning.glory.core.extensions.toReadable
 import app.morning.glory.core.extensions.toast
+import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
 import java.util.Calendar
@@ -59,12 +60,12 @@ fun ButtonSection(time: Calendar) {
                 showSheet = ShowSheet.NONE
             },
             onOneTimeAlarmClick = {
-                AppAlarmManager.scheduleSleepAlarm(context, time, isDaily = false)
+                AppAlarmManager.scheduleAlarm(context, time, AlarmType.SLEEP)
                 context.toast("Scheduled time: ${time.toReadable()}")
                 showSheet = ShowSheet.NONE
             },
             onDailyAlarmClick = {
-                AppAlarmManager.scheduleSleepAlarm(context, time, isDaily = true)
+                AppAlarmManager.scheduleDailyAlarm(context, time)
                 context.toast("Scheduled time: ${time.toReadable()}")
                 showSheet = ShowSheet.NONE
             }

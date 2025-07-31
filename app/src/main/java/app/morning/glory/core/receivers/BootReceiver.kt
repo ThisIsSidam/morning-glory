@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import app.morning.glory.core.extensions.toReadable
+import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
 
@@ -18,14 +19,16 @@ class BootReceiver : BroadcastReceiver() {
     }
 
     private fun rescheduleAlarms(context: Context) {
-        val alarmTime = AppPreferences.sleepAlarmTime
-        if (alarmTime != null) {
-            // isDaily is used to save the localTime in prefs that is already
-            // done when the alarm was initially scheduled, keeping false
-            AppAlarmManager.scheduleSleepAlarm(context, alarmTime, isDaily = false)
-            Log.d("BootReceiver", "Rescheduling after reboot: ${alarmTime.toReadable()}")
-        } else {
-            Log.d("BootReceiver", "Nothing to reschedule")
+        val sleepAlarmTime = AppPreferences.sleepAlarmTime
+        if (sleepAlarmTime != null) {
+            AppAlarmManager.scheduleAlarm(context, sleepAlarmTime, AlarmType.SLEEP)
+            Log.d("BootReceiver", "Rescheduling sleep alarm after reboot: ${sleepAlarmTime.toReadable()}")
+        }
+
+        val napAlarmTime = AppPreferences.napAlarmTime
+        if (napAlarmTime != null) {
+            AppAlarmManager.scheduleAlarm(context, napAlarmTime, AlarmType.NAP)
+            Log.d("BootReceiver", "Rescheduling nap alarm after reboot: ${napAlarmTime.toReadable()}")
         }
 
     }

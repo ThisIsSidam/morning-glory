@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import app.morning.glory.core.audio.AlarmSoundPlayer
 import app.morning.glory.core.extensions.applyLocalTime
 import app.morning.glory.core.notifications.AppNotificationManager
+import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.core.utils.CustomActions
@@ -21,6 +22,7 @@ import java.util.Calendar
 class AlarmService : Service() {
     private lateinit var alarmSoundPlayer: AlarmSoundPlayer
     private var isRunning = false
+    private lateinit var alarmType: AlarmType
 
     /// Creates the service and initiate the alarm sound player
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -37,10 +39,18 @@ class AlarmService : Service() {
                 return START_STICKY
             }
 
-            isRunning = true
+            val alarmTypeString = intent.getStringExtra(AppAlarmManager.alarmTypeExtraKey)
+            alarmType = AlarmType.valueOfOrNull(alarmTypeString) ?: run {
+                // Stop service if alarm type wasn't received.. bad intent
+                alarmSoundPlayer.stopAlarm()
+                stopSelf()
+                return START_NOT_STICKY
+            }
 
             // Start in foreground with a notification
             startForeground(111, createNotification())
+
+            isRunning = true
 
             // Start playing the alarm sound
             alarmSoundPlayer.playAlarm()
@@ -61,7 +71,7 @@ class AlarmService : Service() {
     fun stopAlarm() {
         if (isRunning) {
             alarmSoundPlayer.stopAlarm()
-            manageReschedule()
+            if (alarmType == AlarmType.SLEEP) manageReschedule()
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             isRunning = false
@@ -80,10 +90,10 @@ class AlarmService : Service() {
         if (dailyAlarm != null) {
             val scheduleTime = Calendar.getInstance().applyLocalTime(dailyAlarm)
             scheduleTime.add(Calendar.HOUR_OF_DAY, 24)
-            AppAlarmManager.scheduleSleepAlarm(
+            AppAlarmManager.scheduleAlarm(
                 context,
                 scheduleTime,
-                isDaily = true
+                AlarmType.SLEEP
             )
         }
     }

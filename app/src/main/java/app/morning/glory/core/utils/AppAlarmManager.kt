@@ -8,22 +8,34 @@ import app.morning.glory.core.extensions.toLocalTime
 import app.morning.glory.core.service.AlarmService
 import java.util.Calendar
 
+enum class AlarmType(val requestCode: Int) {
+    SLEEP(123),
+    NAP(111)
+    ;
+
+    companion object {
+        fun valueOfOrNull(name: String?): AlarmType? =
+            name?.let { entries.find { it.name == name } }
+    }
+}
+
 object AppAlarmManager {
-    private const val SLEEP_ALARM_REQUEST_CODE = 123
+
+    val alarmTypeExtraKey : String = "alarm-type"
 
     /** Creates the PendingIntent for the alarm.
      * Used in alarm scheduling and cancelling
      */
-    fun getPendingIntent(context: Context) : PendingIntent {
+    fun getPendingIntent(context: Context, type: AlarmType) : PendingIntent {
         val intent = Intent(context, AlarmService::class.java).apply {
             action = CustomActions.alarmTriggered(context)
-        }
+        }.putExtra(alarmTypeExtraKey,  type.toString())
 
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
         return PendingIntent.getForegroundService(
             context,
-            SLEEP_ALARM_REQUEST_CODE,
+            type.requestCode,
             intent,
             flags
         )
@@ -40,30 +52,45 @@ object AppAlarmManager {
         return newTime
     }
 
-    fun scheduleSleepAlarm(context: Context, time: Calendar, isDaily: Boolean) {
+    /**
+     * If the local time of calendar instance is different, it saves the new time
+     * and then schedules the alarm
+     */
+    fun scheduleDailyAlarm(context: Context, time: Calendar) {
         val truncatedTime = getTruncatedTime(time)
-        if (isDaily) {
-            val oldDaily = AppPreferences.dailyAlarm
-            val localTime = truncatedTime.toLocalTime()
-            if (localTime != oldDaily) {
-                AppPreferences.dailyAlarm = localTime
-            }
+        val oldDaily = AppPreferences.dailyAlarm
+        val localTime = truncatedTime.toLocalTime()
+        if (localTime != oldDaily) {
+            AppPreferences.dailyAlarm = localTime
         }
-        AppPreferences.sleepAlarmTime = truncatedTime
+        scheduleAlarm(context, time, AlarmType.SLEEP)
+    }
+
+    fun scheduleAlarm(context: Context, time: Calendar, type: AlarmType) {
+        val truncatedTime = getTruncatedTime(time)
+        when (type) {
+            AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = truncatedTime
+            AlarmType.NAP -> AppPreferences.napAlarmTime = truncatedTime
+        }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             truncatedTime.timeInMillis,
-            getPendingIntent(context)
+            getPendingIntent(context, type)
         )
     }
 
-    fun cancelAlarm(context: Context) {
+    fun cancelAlarm(context: Context, type: AlarmType) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        AppPreferences.sleepAlarmTime = null
-        val pendingIntent = getPendingIntent(context)
+
+        when (type) {
+            AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = null
+            AlarmType.NAP -> AppPreferences.napAlarmTime = null
+        }
+
+        val pendingIntent = getPendingIntent(context, type)
 
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()

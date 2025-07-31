@@ -14,12 +14,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.morning.glory.core.extensions.toReadable
+import app.morning.glory.core.extensions.toast
+import app.morning.glory.core.utils.AlarmType
+import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
 import java.util.Calendar
 
 @Composable
-fun NapButtons(selectedTime: Calendar) {
+fun NapButtons(time: Calendar) {
+
+    val context = LocalContext.current
     var napTime by remember { mutableStateOf(AppPreferences.napAlarmTime) }
 
     DisposableEffect(Unit) {
@@ -40,7 +47,8 @@ fun NapButtons(selectedTime: Calendar) {
         if (napTime != null)
             Button(
                 onClick = {
-                    // TODO: Cancel nap alarm
+                    AppAlarmManager.cancelAlarm(context, AlarmType.NAP)
+                    context.toast("Cancelled Alarm")
                 },
                 modifier = Modifier
                     .padding(horizontal = 32.dp, vertical = 16.dp)
@@ -52,7 +60,8 @@ fun NapButtons(selectedTime: Calendar) {
 
         Button(
             onClick = {
-                // TODO: Set/Update nap alarm
+                AppAlarmManager.scheduleAlarm(context, time, AlarmType.NAP)
+                context.toast("Scheduled time: ${time.toReadable()}")
             },
             modifier = Modifier
                 .padding(horizontal = 32.dp, vertical = 16.dp)
