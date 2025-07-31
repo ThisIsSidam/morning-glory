@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import app.morning.glory.core.extensions.toLocalTime
+import app.morning.glory.core.extensions.truncateToSeconds
 import app.morning.glory.core.service.AlarmService
 import java.util.Calendar
 
@@ -42,22 +43,11 @@ object AppAlarmManager {
     }
 
     /**
-     * Clones a Calendar instance and truncates its time to the minute.
-     * Values of second and millisecond are replaced with 0.
-     */
-    fun getTruncatedTime(time: Calendar): Calendar {
-        val newTime = time.clone() as Calendar
-        newTime.set(Calendar.SECOND, 0)
-        newTime.set(Calendar.MILLISECOND, 0)
-        return newTime
-    }
-
-    /**
      * If the local time of calendar instance is different, it saves the new time
      * and then schedules the alarm
      */
     fun scheduleDailyAlarm(context: Context, time: Calendar) {
-        val truncatedTime = getTruncatedTime(time)
+        val truncatedTime = time.truncateToSeconds()
         val oldDaily = AppPreferences.dailyAlarm
         val localTime = truncatedTime.toLocalTime()
         if (localTime != oldDaily) {
@@ -67,7 +57,7 @@ object AppAlarmManager {
     }
 
     fun scheduleAlarm(context: Context, time: Calendar, type: AlarmType) {
-        val truncatedTime = getTruncatedTime(time)
+        val truncatedTime = time.truncateToSeconds()
         when (type) {
             AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = truncatedTime
             AlarmType.NAP -> AppPreferences.napAlarmTime = truncatedTime

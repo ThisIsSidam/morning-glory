@@ -29,3 +29,14 @@ fun Calendar.toReadable() : String {
     val readableDate = sdf.format(time)
     return readableDate
 }
+
+/**
+ * Clones a Calendar instance and truncates its time to the minute.
+ * Values of second and millisecond are replaced with 0.
+ */
+fun Calendar.truncateToSeconds(): Calendar {
+    val newTime = clone() as Calendar
+    newTime.set(Calendar.SECOND, 0)
+    newTime.set(Calendar.MILLISECOND, 0)
+    return newTime
+}
