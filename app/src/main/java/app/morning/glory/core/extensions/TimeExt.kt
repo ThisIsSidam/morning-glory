@@ -58,3 +58,7 @@ fun Calendar.formattedDuration(other : Calendar = Calendar.getInstance()) : Stri
         return "$hours Hr $minutes Min"
     }
 }
+
+fun Calendar.isInPast() : Boolean {
+    return this.before(Calendar.getInstance())
+}

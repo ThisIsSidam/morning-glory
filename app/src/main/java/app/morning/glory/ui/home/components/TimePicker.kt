@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.morning.glory.core.extensions.isInPast
 import app.morning.glory.shared.components.Picker
 import app.morning.glory.shared.components.RadioButtonGroup
 import app.morning.glory.shared.components.rememberPickerState
@@ -36,13 +37,14 @@ fun TimePicker(
         val hour = hourPickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
         val minute = minutePickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
 
-        val calendar = Calendar.getInstance().apply {
+        val time = Calendar.getInstance().apply {
             set(Calendar.HOUR, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.AM_PM, if (isAm) Calendar.AM else Calendar.PM)
         }
 
-        onTimeSelected(calendar)
+        if (time.isInPast()) time.add(Calendar.HOUR_OF_DAY, 24)
+        onTimeSelected(time)
     }
 
     Row(
