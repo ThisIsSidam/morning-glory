@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import app.morning.glory.core.extensions.toReadable
+import app.morning.glory.core.extensions.friendly
 import app.morning.glory.core.extensions.toast
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
@@ -61,7 +61,7 @@ fun NapButtons(time: Calendar) {
         Button(
             onClick = {
                 AppAlarmManager.scheduleAlarm(context, time, AlarmType.NAP)
-                context.toast("Scheduled time: ${time.toReadable()}")
+                context.toast("Scheduled time: ${time.friendly(context)}")
             },
             modifier = Modifier
                 .padding(horizontal = 32.dp, vertical = 16.dp)

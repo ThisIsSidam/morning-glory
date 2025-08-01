@@ -15,9 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.morning.glory.core.extensions.formattedDuration
-import app.morning.glory.core.extensions.toReadable
+import app.morning.glory.core.extensions.friendly
 import app.morning.glory.core.utils.AppPreferences
 
 @Composable
@@ -38,6 +39,8 @@ fun SleepHeader() {
 
 @Composable
 fun NextSleepAlarmText() {
+
+    val context = LocalContext.current
     var nextAlarmTime by remember {mutableStateOf(AppPreferences.sleepAlarmTime)}
     var showDuration by remember { mutableStateOf(AppPreferences.displaySleepDuration) }
 
@@ -62,7 +65,7 @@ fun NextSleepAlarmText() {
     } else {
         when (showDuration) {
             true -> "Alarm in ${alarmTime.formattedDuration()}"
-            false -> "Next alarm at ${alarmTime.toReadable()}"
+            false -> "Next alarm at ${alarmTime.friendly(context)}"
         }
     }
 

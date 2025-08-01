@@ -21,8 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.morning.glory.core.extensions.applyLocalTime
+import app.morning.glory.core.extensions.friendly
 import app.morning.glory.core.extensions.toLocalTime
-import app.morning.glory.core.extensions.toReadable
 import app.morning.glory.core.extensions.toast
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
@@ -53,7 +53,7 @@ fun AlarmCancellationSheet(
         val time : Calendar = setAlarmTime
         time.add(Calendar.HOUR_OF_DAY, 24)
         AppAlarmManager.scheduleAlarm(context, time, AlarmType.SLEEP)
-        context.toast("Scheduled time: ${time.toReadable()}")
+        context.toast("Scheduled time: ${time.friendly(context)}")
         onDismiss()
     }
 
@@ -66,7 +66,7 @@ fun AlarmCancellationSheet(
         require(dailyAlarm != null, { "Can't revert to daily, daily alarm value is null" })
         setAlarmTime.applyLocalTime(dailyAlarm)
         AppAlarmManager.scheduleAlarm(context, setAlarmTime, AlarmType.SLEEP)
-        context.toast("Scheduled time: ${setAlarmTime.toReadable()}")
+        context.toast("Scheduled time: ${setAlarmTime.friendly(context)}")
         onDismiss()
     }
 

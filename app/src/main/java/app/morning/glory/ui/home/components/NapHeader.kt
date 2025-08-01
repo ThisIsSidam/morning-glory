@@ -1,6 +1,7 @@
 package app.morning.glory.ui.home.components
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.morning.glory.core.extensions.formattedDuration
-import app.morning.glory.core.extensions.toReadable
+import app.morning.glory.core.extensions.friendly
 import app.morning.glory.core.utils.AppPreferences
 
 @Composable
@@ -38,6 +40,7 @@ fun NapHeader() {
 
 @Composable
 fun NextNapAlarmText() {
+    val context = LocalContext.current
     var nextAlarmTime by remember { mutableStateOf(AppPreferences.napAlarmTime) }
     var showDuration by remember { mutableStateOf(AppPreferences.displayNapDuration) }
 
@@ -59,9 +62,10 @@ fun NextNapAlarmText() {
     val textToShow = if (alarmTime == null) {
         "No alarm set!"
     } else {
+        Log.d("NextNapAlarmText", "time: ${alarmTime}")
         when (showDuration) {
             true -> "Alarm in ${alarmTime.formattedDuration()}"
-            false -> "Next alarm at ${alarmTime.toReadable()}"
+            false -> "Next alarm at ${alarmTime.friendly(context)}"
         }
     }
 
