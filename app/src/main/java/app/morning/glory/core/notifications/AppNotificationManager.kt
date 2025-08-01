@@ -9,8 +9,28 @@ import androidx.core.content.ContextCompat
 import app.morning.glory.R
 
 object AppNotificationManager {
-    private fun getNotificationManager(context: Context): NotificationManager {
+
+    fun getNotificationManager(context: Context) : NotificationManager {
         return ContextCompat.getSystemService(context, NotificationManager::class.java)!!
+    }
+
+    fun createPreAlarmNotification(
+        context: Context,
+        stopActionIntent: PendingIntent
+    ) : Notification {
+        val contentTitle = context.getString(R.string.alarm_notification_title)
+        val contentText = context.getString(R.string.pre_alarm_notification_content)
+
+        return NotificationCompat.Builder(context, NotificationChannelType.ALARMS.id)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(contentTitle)
+            .setContentText(contentText)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .addAction(R.drawable.round_stop_24, "Dismiss Alarm", stopActionIntent)
+            .setAutoCancel(true)
+            .build()
     }
 
     fun createAlarmNotification(

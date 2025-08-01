@@ -65,11 +65,19 @@
         <receiver android:name=".core.receivers.BootReceiver"
             android:directBootAware="true"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".core.receivers.PreAlarmReceiver"
+            android:enabled="true"
+            android:exported="false"/>
+
+        <receiver android:name=".core.receivers.StopAlarmReceiver"
+            android:enabled="true"
+            android:exported="false"/>
 
     </application>
 

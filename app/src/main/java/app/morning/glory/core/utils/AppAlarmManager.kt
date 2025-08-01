@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import app.morning.glory.core.extensions.toLocalTime
 import app.morning.glory.core.extensions.truncateToSeconds
+import app.morning.glory.core.receivers.PreAlarmReceiver
 import app.morning.glory.core.service.AlarmService
 import java.util.Calendar
 
@@ -23,14 +24,16 @@ enum class AlarmType(val requestCode: Int) {
 object AppAlarmManager {
 
     val alarmTypeExtraKey : String = "alarm-type"
+    private val PRE_ALARM_REQUEST_CODE = 2345
 
-    /** Creates the PendingIntent for the alarm.
+    /**
+     * Creates the PendingIntent for the alarm.
      * Used in alarm scheduling and cancelling
      */
-    fun getPendingIntent(context: Context, type: AlarmType) : PendingIntent {
+    fun getAlarmPendingIntent(context: Context, type: AlarmType) : PendingIntent {
         val intent = Intent(context, AlarmService::class.java).apply {
             action = CustomActions.alarmTriggered(context)
-        }.putExtra(alarmTypeExtraKey,  type.toString())
+        }.putExtra(alarmTypeExtraKey, type.toString())
 
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
@@ -39,6 +42,16 @@ object AppAlarmManager {
             type.requestCode,
             intent,
             flags
+        )
+    }
+
+    fun getPreAlarmPendingIntent(context: Context) : PendingIntent {
+        val intent = Intent(context, PreAlarmReceiver::class.java)
+        return PendingIntent.getBroadcast(
+            context,
+            PRE_ALARM_REQUEST_CODE,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
 
@@ -68,8 +81,19 @@ object AppAlarmManager {
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             truncatedTime.timeInMillis,
-            getPendingIntent(context, type)
+            getAlarmPendingIntent(context, type)
         )
+
+        // 30 Minutes before main alarm time, pre-alarm notification will be shown
+        // Only for sleep alarms
+        if (type == AlarmType.SLEEP) {
+            truncatedTime.add(Calendar.MINUTE, -30)
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                truncatedTime.timeInMillis,
+                getPreAlarmPendingIntent(context)
+            )
+        }
     }
 
     fun cancelAlarm(context: Context, type: AlarmType) {
@@ -80,7 +104,7 @@ object AppAlarmManager {
             AlarmType.NAP -> AppPreferences.napAlarmTime = null
         }
 
-        val pendingIntent = getPendingIntent(context, type)
+        val pendingIntent = getAlarmPendingIntent(context, type)
 
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
