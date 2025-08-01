@@ -17,7 +17,7 @@ import app.morning.glory.shared.components.rememberPickerState
 @Composable
 fun DurationPicker(
     /// [initDuration] is duration count in minutes, should be >= 0 and < 24 hours
-    initDuration: Long = 0,
+    initDuration: Int = 0,
     onDurationSelected: (Long) -> Unit
 ) {
     require(initDuration >= 0 && initDuration < 24 * 60) { "initDuration should be >= 0 and less than 24 hours"}

@@ -27,6 +27,7 @@ import java.util.Calendar
 fun HomeScreenView(
     modifier: Modifier = Modifier,
     headerComposable: @Composable () -> Unit,
+    durationHeadstart: Int,
     buttonsComposable: @Composable (Calendar) -> Unit
 ) {
 
@@ -87,7 +88,7 @@ fun HomeScreenView(
                     )
                 } else {
                     DurationPicker(
-                        initDuration = 7 * 60 + 30,
+                        initDuration = durationHeadstart,
                         onDurationSelected = onDurationSelected
                     )
                 }

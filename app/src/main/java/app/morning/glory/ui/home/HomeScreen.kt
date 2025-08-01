@@ -37,11 +37,13 @@ fun HomeScreen() {
             when (view) {
                 HomeView.SLEEP -> HomeScreenView(
                     headerComposable = { SleepHeader() },
-                    buttonsComposable = { time ->  ButtonSection(time) }
+                    buttonsComposable = { time ->  ButtonSection(time) },
+                    durationHeadstart = 7 * 60 + 30
                 )
                 HomeView.NAP -> HomeScreenView(
                     headerComposable = { NapHeader() },
-                    buttonsComposable = { time -> NapButtons(time) }
+                    buttonsComposable = { time -> NapButtons(time) },
+                    durationHeadstart = 20
                 )
             }
         }
