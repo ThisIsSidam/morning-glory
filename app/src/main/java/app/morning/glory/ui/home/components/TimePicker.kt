@@ -33,7 +33,7 @@ fun TimePicker(
     var hourPickerState = rememberPickerState()
     var minutePickerState = rememberPickerState()
 
-    LaunchedEffect(hourPickerState.selectedItem, minutePickerState.selectedItem) {
+    LaunchedEffect(hourPickerState.selectedItem, minutePickerState.selectedItem, isAm) {
         val hour = hourPickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
         val minute = minutePickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
 
@@ -59,13 +59,6 @@ fun TimePicker(
 
             visibleItemsCount = 7,
             state = hourPickerState
-//            onValueChange = { hour ->
-//                val newTime = time.clone() as Calendar
-//                newTime.set(Calendar.HOUR_OF_DAY, if (is24HourFormat) hour
-//                else if (isAm) if (hour == 12) 0 else hour
-//                else if (hour == 12) 12 else hour + 12)
-//                time = newTime
-//            },
         )
 
         Text(
@@ -80,14 +73,8 @@ fun TimePicker(
             startIndex = time.get(Calendar.MINUTE),
             visibleItemsCount = 7,
             state = minutePickerState
-//            onValueChange = { minute ->
-//                val newTime = time.clone() as Calendar
-//                newTime.set(Calendar.MINUTE, minute)
-//                time = newTime
-//            },
         )
 
-        // AM/PM Toggle (only for 12-hour format)
         if (!is24HourFormat) {
             Spacer(modifier = Modifier.width(16.dp))
 
