@@ -12,7 +12,8 @@ import java.util.Calendar
 
 enum class AlarmType(val requestCode: Int) {
     SLEEP(123),
-    NAP(111)
+    NAP(111),
+    FOLLOW_UP(124) // Created post sleep alarms only
     ;
 
     companion object {
@@ -74,6 +75,7 @@ object AppAlarmManager {
         when (type) {
             AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = truncatedTime
             AlarmType.NAP -> AppPreferences.napAlarmTime = truncatedTime
+            AlarmType.FOLLOW_UP -> AppPreferences.followUpAlarmTime = truncatedTime
         }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -102,6 +104,7 @@ object AppAlarmManager {
         when (type) {
             AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = null
             AlarmType.NAP -> AppPreferences.napAlarmTime = null
+            AlarmType.FOLLOW_UP -> AppPreferences.followUpAlarmTime = null
         }
 
         val pendingIntent = getAlarmPendingIntent(context, type)

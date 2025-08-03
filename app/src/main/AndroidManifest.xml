@@ -79,6 +79,10 @@
             android:enabled="true"
             android:exported="false"/>
 
+        <receiver android:name=".core.receivers.FollowUpNotificationReceiver"
+            android:enabled="true"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

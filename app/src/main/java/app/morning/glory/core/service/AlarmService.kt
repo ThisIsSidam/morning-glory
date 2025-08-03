@@ -1,5 +1,6 @@
 package app.morning.glory.core.service
 
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
@@ -11,7 +12,10 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import app.morning.glory.core.audio.AlarmSoundPlayer
 import app.morning.glory.core.extensions.applyLocalTime
+import app.morning.glory.core.extensions.friendly
+import app.morning.glory.core.extensions.truncateToSeconds
 import app.morning.glory.core.notifications.AppNotificationManager
+import app.morning.glory.core.receivers.FollowUpNotificationReceiver
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
@@ -69,28 +73,30 @@ class AlarmService : Service() {
     /// If running, stop the alarm sound and remove the foreground notification,
     /// then stop the service
     fun stopAlarm() {
-        if (isRunning) {
+        if (!isRunning) return
 
-            // Initialized preferences
-            val context = applicationContext
-            AppPreferences.init(context)
+        // Initialized preferences
+        val context = applicationContext
+        AppPreferences.init(context)
 
-            alarmSoundPlayer.stopAlarm()
+        alarmSoundPlayer.stopAlarm()
 
-            // Clear the saved alarm time and reschedule in case of sleep alarm
-            when (alarmType) {
-                AlarmType.SLEEP -> {
-                    AppPreferences.sleepAlarmTime = null
-                    manageReschedule(context)
-                }
-                AlarmType.NAP -> AppPreferences.napAlarmTime = null
+        // Clear the saved alarm time and reschedule in case of sleep alarm
+        when (alarmType) {
+            AlarmType.SLEEP -> {
+                AppPreferences.sleepAlarmTime = null
+                registerFollowUpNotification(context)
+                manageReschedule(context)
             }
-
-            // Stop foreground and then service
-            stopForeground(STOP_FOREGROUND_REMOVE)
-            stopSelf()
-            isRunning = false
+            AlarmType.NAP -> AppPreferences.napAlarmTime = null
+            AlarmType.FOLLOW_UP -> AppPreferences.followUpAlarmTime = null
         }
+
+
+        // Stop foreground and then service
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+        isRunning = false
     }
 
     /// Check for daily time presence and set new alarm
@@ -105,6 +111,30 @@ class AlarmService : Service() {
                 AlarmType.SLEEP
             )
         }
+    }
+
+    private fun registerFollowUpNotification(context: Context) {
+        val time = Calendar.getInstance()
+        time.add(Calendar.MINUTE, 15)
+
+        Log.d("AlarmService", "follow up time: ${time.friendly(context)}")
+        val intent = Intent(context, FollowUpNotificationReceiver::class.java)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            FOLLOW_UP_REQUEST_CODE,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
+
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            time.truncateToSeconds().timeInMillis,
+            pendingIntent
+        )
+        Log.d("AlarmService", "Schedule Complete")
     }
 
     /// Notification for foreground service and the Alarm
@@ -126,6 +156,8 @@ class AlarmService : Service() {
     }
 
     companion object {
+        private const val FOLLOW_UP_REQUEST_CODE = 1500
+
         fun stopService(context: Context) {
             val intent = Intent(context, AlarmService::class.java)
             context.stopService(intent)

@@ -14,12 +14,14 @@ object AppNotificationManager {
         return ContextCompat.getSystemService(context, NotificationManager::class.java)!!
     }
 
-    fun createPreAlarmNotification(
+    fun createActionNotification(
         context: Context,
-        stopActionIntent: PendingIntent
+        actionIntent: PendingIntent,
+        actionText: String,
+        actionIcon: Int,
+        contentText: String,
     ) : Notification {
         val contentTitle = context.getString(R.string.alarm_notification_title)
-        val contentText = context.getString(R.string.pre_alarm_notification_content)
 
         return NotificationCompat.Builder(context, NotificationChannelType.ALARMS.id)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -28,10 +30,12 @@ object AppNotificationManager {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .addAction(R.drawable.round_stop_24, "Dismiss Alarm", stopActionIntent)
+            .addAction(actionIcon, actionText, actionIntent)
             .setAutoCancel(true)
             .build()
     }
+
+
 
     fun createAlarmNotification(
         context: Context,

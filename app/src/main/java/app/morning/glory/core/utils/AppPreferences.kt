@@ -82,11 +82,23 @@ object AppPreferences {
     const val NAP_TIME = "nap_alarm_time"
 
     /**
-     * Saving the time of sleep alarms...
+     * Saving the time of nap alarms...
      * Saved when an alarm is scheduled
      * Used for rescheduling
      */
     var napAlarmTime: Calendar?
+        get() = prefs.getTime(NAP_TIME, null)
+        set(value) {
+            prefs.edit { putTime(NAP_TIME, value) }
+        }
+
+
+    /**
+     * Saving the time of sleep alarms...
+     * Saved when an alarm is scheduled
+     * Used for rescheduling
+     */
+    var followUpAlarmTime: Calendar?
         get() = prefs.getTime(NAP_TIME, null)
         set(value) {
             prefs.edit { putTime(NAP_TIME, value) }
