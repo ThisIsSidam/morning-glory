@@ -19,6 +19,13 @@ enum class AlarmType(val requestCode: Int) {
         fun valueOfOrNull(name: String?): AlarmType? =
             name?.let { entries.find { it.name == name } }
     }
+
+    fun updatePrefs(time: Calendar?) {
+        when (this) {
+            SLEEP -> AppPreferences.sleepAlarmTime = time
+            NAP -> AppPreferences.napAlarmTime = time
+        }
+    }
 }
 
 object AppAlarmManager {
@@ -76,10 +83,7 @@ object AppAlarmManager {
 
     fun scheduleAlarm(context: Context, time: Calendar, type: AlarmType, ) {
         val truncatedTime = time.truncateToSeconds()
-        when (type) {
-            AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = truncatedTime
-            AlarmType.NAP -> AppPreferences.napAlarmTime = truncatedTime
-        }
+        type.updatePrefs(truncatedTime)
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -103,10 +107,7 @@ object AppAlarmManager {
 
     fun snoozeAlarm(context: Context, time: Calendar, type: AlarmType, snoozeCount: Int ) {
         val truncatedTime = time.truncateToSeconds()
-        when (type) {
-            AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = truncatedTime
-            AlarmType.NAP -> AppPreferences.napAlarmTime = truncatedTime
-        }
+        type.updatePrefs(truncatedTime)
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -120,10 +121,7 @@ object AppAlarmManager {
     fun cancelAlarm(context: Context, type: AlarmType) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        when (type) {
-            AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = null
-            AlarmType.NAP -> AppPreferences.napAlarmTime = null
-        }
+        type.updatePrefs(null)
 
         val pendingIntent = getAlarmPendingIntent(context, type)
 

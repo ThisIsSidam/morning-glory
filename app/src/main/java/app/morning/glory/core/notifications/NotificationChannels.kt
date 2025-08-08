@@ -3,8 +3,6 @@ package app.morning.glory.core.notifications
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import app.morning.glory.R
 
@@ -30,11 +28,10 @@ enum class NotificationChannelType(
     fun getDescription(context: Context): String = context.getString(descriptionResId)
 
     companion object {
-        @RequiresApi(Build.VERSION_CODES.O)
         fun createAllChannels(context: Context) {
             val notificationManager = context.getSystemService(NotificationManager::class.java)
             
-            values().forEach { channelType ->
+            entries.forEach { channelType ->
                 val channel = NotificationChannel(
                     channelType.id,
                     channelType.getName(context),
