@@ -14,7 +14,7 @@ import app.morning.glory.core.utils.AppPreferences
  */
 class StopAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
-        val alarmTypeString = intent?.getStringExtra(AppAlarmManager.alarmTypeExtraKey)
+        val alarmTypeString = intent?.getStringExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY)
         val alarmType = AlarmType.valueOfOrNull(alarmTypeString) ?: return
 
         AppPreferences.init(context)

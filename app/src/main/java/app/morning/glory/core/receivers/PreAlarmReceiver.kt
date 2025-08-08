@@ -15,7 +15,7 @@ class PreAlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
 
         val actionIntent = Intent(context, StopAlarmReceiver::class.java).putExtra(
-            AppAlarmManager.alarmTypeExtraKey, AlarmType.SLEEP.toString()
+            AppAlarmManager.ALARM_TYPE_EXTRA_KEY, AlarmType.SLEEP.toString()
         )
 
         val actionPendingIntent = PendingIntent.getBroadcast(

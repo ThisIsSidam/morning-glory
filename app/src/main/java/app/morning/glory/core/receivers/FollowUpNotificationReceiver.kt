@@ -36,7 +36,7 @@ class FollowUpNotificationReceiver: BroadcastReceiver() {
 
         // Create intent for cancelling it
         val actionIntent = Intent(context, StopAlarmReceiver::class.java).putExtra(
-            AppAlarmManager.alarmTypeExtraKey, AlarmType.FOLLOW_UP.toString()
+            AppAlarmManager.ALARM_TYPE_EXTRA_KEY, AlarmType.FOLLOW_UP.toString()
         )
 
         val actionPendingIntent = PendingIntent.getBroadcast(

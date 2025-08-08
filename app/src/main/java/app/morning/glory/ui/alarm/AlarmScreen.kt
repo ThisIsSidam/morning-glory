@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,7 +36,9 @@ import com.journeyapps.barcodescanner.ScanOptions
 
 @Composable
 fun AlarmScreen(
-    onDismiss: () -> Unit = {}
+    onDismiss: () -> Unit = {},
+    onSnooze: () -> Unit,
+    snoozeCount: Int
 ) {
     val alarmCode by remember { mutableStateOf(AppPreferences.alarmCode) }
 
@@ -58,17 +61,24 @@ fun AlarmScreen(
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            if (alarmCode != null) {
-                ScanQRButton(alarmCode!!, onDismiss)
-            } else {
-                Button(
-                    onClick = onDismiss,
-                    modifier = Modifier
-                        .height(56.dp)
-                ) {
-                    Text("Dismiss", fontSize = 18.sp)
+            Row {
+                if (alarmCode != null) {
+                    ScanQRButton(alarmCode!!, onDismiss)
+                } else {
+                    Button(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .height(56.dp)
+                    ) {
+                        Text("Dismiss", fontSize = 18.sp)
+                    }
+                }
+
+                if (snoozeCount < 2) {
+                    SnoozeButton(onSnooze)
                 }
             }
+
         }
     }
 }
@@ -111,5 +121,26 @@ fun ScanQRButton(alarmCode : String, onDismiss: () -> Unit) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text("Scan to Dismiss", fontSize = 18.sp)
+    }
+}
+
+@Composable
+fun SnoozeButton(onSnooze: () -> Unit) {
+    val context = LocalContext.current
+
+    Button(
+        onClick = {
+
+        },
+        modifier = Modifier
+            .height(56.dp)
+    ) {
+        Icon (
+            painter = painterResource(id = R.drawable.outline_snooze_24),
+            contentDescription = "Snooze alarm icon",
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("Snooze", fontSize = 18.sp)
     }
 }

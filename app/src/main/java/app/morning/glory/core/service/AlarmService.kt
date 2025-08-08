@@ -27,6 +27,7 @@ class AlarmService : Service() {
     private lateinit var alarmSoundPlayer: AlarmSoundPlayer
     private var isRunning = false
     private lateinit var alarmType: AlarmType
+    private var snoozeCount: Int = 0
 
     /// Creates the service and initiate the alarm sound player
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -43,13 +44,15 @@ class AlarmService : Service() {
                 return START_STICKY
             }
 
-            val alarmTypeString = intent.getStringExtra(AppAlarmManager.alarmTypeExtraKey)
+            val alarmTypeString = intent.getStringExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY)
             alarmType = AlarmType.valueOfOrNull(alarmTypeString) ?: run {
                 // Stop service if alarm type wasn't received.. bad intent
                 alarmSoundPlayer.stopAlarm()
                 stopSelf()
                 return START_NOT_STICKY
             }
+
+            snoozeCount = intent.getIntExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, 2)
 
             // Start in foreground with a notification
             startForeground(111, createNotification())
@@ -113,6 +116,13 @@ class AlarmService : Service() {
         }
     }
 
+    private fun onSnooze() {
+        // TODO: Complete method
+        val time = Calendar.getInstance()
+        time.add(Calendar.MINUTE, 10)
+        AppAlarmManager.snoozeAlarm(applicationContext, time, AlarmType.SLEEP, snoozeCount+1)
+    }
+
     private fun registerFollowUpNotification(context: Context) {
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, 15)
@@ -141,7 +151,9 @@ class AlarmService : Service() {
     private fun createNotification(): Notification {
 
         // Intent to open the AlarmActivity when the notification is clicked
-        val fullScreenIntent = Intent(this, AlarmActivity::class.java)
+        val fullScreenIntent = Intent(this, AlarmActivity::class.java).putExtra(
+            AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, snoozeCount
+        )
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this,
             0,

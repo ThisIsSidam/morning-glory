@@ -8,6 +8,7 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import app.morning.glory.core.service.AlarmService
+import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.ui.theme.MorningGloryTheme
 
@@ -19,6 +20,8 @@ class AlarmActivity : ComponentActivity() {
 
         // Turn on the screen and show on lock screen
         turnScreenOnAndShowWhenLocked()
+
+        val snoozeCount = intent.getIntExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, 2)
         
         setContent {
             MorningGloryTheme {
@@ -26,6 +29,10 @@ class AlarmActivity : ComponentActivity() {
                     onDismiss = {
                         AlarmService.stopService(this@AlarmActivity)
                         finish()
+                    },
+                    snoozeCount = snoozeCount,
+                    onSnooze = {
+                        // TODO: Implement snooze functionality
                     }
                 )
             }

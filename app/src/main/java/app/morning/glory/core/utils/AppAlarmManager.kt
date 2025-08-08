@@ -24,17 +24,22 @@ enum class AlarmType(val requestCode: Int) {
 
 object AppAlarmManager {
 
-    val alarmTypeExtraKey : String = "alarm-type"
-    private val PRE_ALARM_REQUEST_CODE = 2345
+    const val ALARM_TYPE_EXTRA_KEY : String = "alarm-type"
+    const val SNOOZE_COUNT_EXTRA_KEY : String = "snooze_count"
+    private const val PRE_ALARM_REQUEST_CODE = 2345
 
     /**
      * Creates the PendingIntent for the alarm.
      * Used in alarm scheduling and cancelling
      */
-    fun getAlarmPendingIntent(context: Context, type: AlarmType) : PendingIntent {
+    fun getAlarmPendingIntent(
+        context: Context, type: AlarmType, snoozeCount: Int = 0
+    ) : PendingIntent {
         val intent = Intent(context, AlarmService::class.java).apply {
             action = CustomActions.alarmTriggered(context)
-        }.putExtra(alarmTypeExtraKey, type.toString())
+            putExtra(ALARM_TYPE_EXTRA_KEY, type.toString())
+            putExtra(SNOOZE_COUNT_EXTRA_KEY, snoozeCount)
+        }
 
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
@@ -70,7 +75,7 @@ object AppAlarmManager {
         scheduleAlarm(context, time, AlarmType.SLEEP)
     }
 
-    fun scheduleAlarm(context: Context, time: Calendar, type: AlarmType) {
+    fun scheduleAlarm(context: Context, time: Calendar, type: AlarmType, ) {
         val truncatedTime = time.truncateToSeconds()
         when (type) {
             AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = truncatedTime
@@ -96,6 +101,23 @@ object AppAlarmManager {
                 getPreAlarmPendingIntent(context)
             )
         }
+    }
+
+    fun snoozeAlarm(context: Context, time: Calendar, type: AlarmType, snoozeCount: Int ) {
+        val truncatedTime = time.truncateToSeconds()
+        when (type) {
+            AlarmType.SLEEP -> AppPreferences.sleepAlarmTime = truncatedTime
+            AlarmType.NAP -> AppPreferences.napAlarmTime = truncatedTime
+            AlarmType.FOLLOW_UP -> AppPreferences.followUpAlarmTime = truncatedTime
+        }
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            truncatedTime.timeInMillis,
+            getAlarmPendingIntent(context, type, snoozeCount)
+        )
     }
 
     fun cancelAlarm(context: Context, type: AlarmType) {
