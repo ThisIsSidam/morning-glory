@@ -75,7 +75,19 @@ fun AlarmScreen(
                 }
 
                 if (snoozeCount < 2) {
-                    SnoozeButton(onSnooze)
+                    Button(
+                        onClick = onSnooze,
+                        modifier = Modifier
+                            .height(56.dp)
+                    ) {
+                        Icon (
+                            painter = painterResource(id = R.drawable.outline_snooze_24),
+                            contentDescription = "Snooze alarm icon",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Snooze", fontSize = 18.sp)
+                    }
                 }
             }
 
@@ -121,26 +133,5 @@ fun ScanQRButton(alarmCode : String, onDismiss: () -> Unit) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text("Scan to Dismiss", fontSize = 18.sp)
-    }
-}
-
-@Composable
-fun SnoozeButton(onSnooze: () -> Unit) {
-    val context = LocalContext.current
-
-    Button(
-        onClick = {
-
-        },
-        modifier = Modifier
-            .height(56.dp)
-    ) {
-        Icon (
-            painter = painterResource(id = R.drawable.outline_snooze_24),
-            contentDescription = "Snooze alarm icon",
-            modifier = Modifier.padding(end = 8.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text("Snooze", fontSize = 18.sp)
     }
 }

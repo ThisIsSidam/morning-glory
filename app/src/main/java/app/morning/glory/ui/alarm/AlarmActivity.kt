@@ -64,17 +64,15 @@ class AlarmActivity : ComponentActivity() {
                     onDismiss = {
                         if (isBound) {
                             alarmService.stopSelf()
-                            Log.d("AlarmActivity", "Stopping AlarmService")
-                        } else {
-                            Log.d("AlarmActivity", "Service not bound, cannot stop service")
                         }
                         finish()
                     },
                     snoozeCount = snoozeCount,
                     onSnooze = {
                         if (isBound) {
-                            alarmService.snoozeAlarm()
+                            alarmService.snoozeAndDismissAlarm()
                         }
+                        finish()
                     }
                 )
             }

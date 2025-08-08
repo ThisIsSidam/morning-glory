@@ -4,7 +4,6 @@ import android.app.AlarmManager
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
@@ -54,6 +53,8 @@ class AlarmService : Service() {
                 return START_STICKY
             }
 
+            AppPreferences.init(applicationContext)
+
             val alarmTypeString = intent.getStringExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY)
             alarmType = AlarmType.valueOfOrNull(alarmTypeString) ?: run {
                 // Stop service if alarm type wasn't received.. bad intent
@@ -78,17 +79,13 @@ class AlarmService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopAlarm()
+        dismissAlarm()
     }
 
     /// If running, stop the alarm sound and remove the foreground notification,
     /// then stop the service
-    fun stopAlarm() {
+    fun dismissAlarm() {
         if (!isRunning) return
-
-        // Initialized preferences
-        val context = applicationContext
-        AppPreferences.init(context)
 
         alarmSoundPlayer.stopAlarm()
 
@@ -96,8 +93,8 @@ class AlarmService : Service() {
         when (alarmType) {
             AlarmType.SLEEP -> {
                 AppPreferences.sleepAlarmTime = null
-                registerFollowUpNotification(context)
-                manageReschedule(context)
+                registerFollowUpNotification()
+                manageReschedule()
             }
             AlarmType.NAP -> AppPreferences.napAlarmTime = null
             AlarmType.FOLLOW_UP -> AppPreferences.followUpAlarmTime = null
@@ -111,27 +108,40 @@ class AlarmService : Service() {
     }
 
     /// Check for daily time presence and set new alarm
-    private fun manageReschedule(context: Context)  {
+    private fun manageReschedule()  {
         val dailyAlarm = AppPreferences.dailyAlarm
         if (dailyAlarm != null) {
             val scheduleTime = Calendar.getInstance().applyLocalTime(dailyAlarm)
             scheduleTime.add(Calendar.HOUR_OF_DAY, 24)
             AppAlarmManager.scheduleAlarm(
-                context,
+                applicationContext,
                 scheduleTime,
                 AlarmType.SLEEP
             )
         }
     }
 
-    fun snoozeAlarm() {
-        // TODO: Complete method
+    /**
+     * Snooze the alarm for 10 minutes and dismiss it.
+     */
+    fun snoozeAndDismissAlarm() {
+        if (!isRunning) return
+
+        Log.d("AlarmService", "Snooze count: $snoozeCount")
+        alarmSoundPlayer.stopAlarm()
+
         val time = Calendar.getInstance()
-        time.add(Calendar.MINUTE, 10)
+        time.add(Calendar.MINUTE, 2)
         AppAlarmManager.snoozeAlarm(applicationContext, time, AlarmType.SLEEP, snoozeCount+1)
+
+        // Stop foreground and then service
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+        isRunning = false
     }
 
-    private fun registerFollowUpNotification(context: Context) {
+    private fun registerFollowUpNotification() {
+        val context = applicationContext
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, 15)
 
