@@ -1,9 +1,14 @@
 package app.morning.glory.ui.alarm
 
 import android.app.KeyguardManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,7 +18,37 @@ import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.ui.theme.MorningGloryTheme
 
 class AlarmActivity : ComponentActivity() {
-    
+
+    private lateinit var alarmService: AlarmService
+    private var isBound = false
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as AlarmService.LocalBinder
+            alarmService = binder.getService()
+            isBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            isBound = false
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val intent = Intent(this, AlarmService::class.java)
+        bindService(intent, connection, BIND_AUTO_CREATE)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppPreferences.init(this)
@@ -27,12 +62,19 @@ class AlarmActivity : ComponentActivity() {
             MorningGloryTheme {
                 AlarmScreen(
                     onDismiss = {
-                        AlarmService.stopService(this@AlarmActivity)
+                        if (isBound) {
+                            alarmService.stopSelf()
+                            Log.d("AlarmActivity", "Stopping AlarmService")
+                        } else {
+                            Log.d("AlarmActivity", "Service not bound, cannot stop service")
+                        }
                         finish()
                     },
                     snoozeCount = snoozeCount,
                     onSnooze = {
-                        // TODO: Implement snooze functionality
+                        if (isBound) {
+                            alarmService.snoozeAlarm()
+                        }
                     }
                 )
             }

@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -24,6 +25,15 @@ import app.morning.glory.ui.alarm.AlarmActivity
 import java.util.Calendar
 
 class AlarmService : Service() {
+
+    inner class LocalBinder : Binder() {
+        fun getService(): AlarmService = this@AlarmService
+    }
+
+    private val localBinder = LocalBinder()
+
+    override fun onBind(intent: Intent?): IBinder? = localBinder
+
     private lateinit var alarmSoundPlayer: AlarmSoundPlayer
     private var isRunning = false
     private lateinit var alarmType: AlarmType
@@ -65,8 +75,6 @@ class AlarmService : Service() {
 
         return START_STICKY
     }
-
-    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -116,7 +124,7 @@ class AlarmService : Service() {
         }
     }
 
-    private fun onSnooze() {
+    fun snoozeAlarm() {
         // TODO: Complete method
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, 10)
@@ -169,10 +177,5 @@ class AlarmService : Service() {
 
     companion object {
         private const val FOLLOW_UP_REQUEST_CODE = 1500
-
-        fun stopService(context: Context) {
-            val intent = Intent(context, AlarmService::class.java)
-            context.stopService(intent)
-        }
     }
 }
