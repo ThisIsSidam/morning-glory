@@ -1,6 +1,5 @@
 package app.morning.glory.core.service
 
-import android.app.AlarmManager
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
@@ -12,10 +11,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import app.morning.glory.core.audio.AlarmSoundPlayer
 import app.morning.glory.core.extensions.applyLocalTime
-import app.morning.glory.core.extensions.friendly
-import app.morning.glory.core.extensions.truncateToSeconds
 import app.morning.glory.core.notifications.AppNotificationManager
-import app.morning.glory.core.receivers.FollowUpNotificationReceiver
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
@@ -93,11 +89,9 @@ class AlarmService : Service() {
         when (alarmType) {
             AlarmType.SLEEP -> {
                 AppPreferences.sleepAlarmTime = null
-                registerFollowUpNotification()
                 manageReschedule()
             }
             AlarmType.NAP -> AppPreferences.napAlarmTime = null
-            AlarmType.FOLLOW_UP -> AppPreferences.followUpAlarmTime = null
         }
 
 
@@ -140,31 +134,6 @@ class AlarmService : Service() {
         isRunning = false
     }
 
-    private fun registerFollowUpNotification() {
-        val context = applicationContext
-        val time = Calendar.getInstance()
-        time.add(Calendar.MINUTE, 15)
-
-        Log.d("AlarmService", "follow up time: ${time.friendly(context)}")
-        val intent = Intent(context, FollowUpNotificationReceiver::class.java)
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            FOLLOW_UP_REQUEST_CODE,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            time.truncateToSeconds().timeInMillis,
-            pendingIntent
-        )
-        Log.d("AlarmService", "Schedule Complete")
-    }
-
     /// Notification for foreground service and the Alarm
     private fun createNotification(): Notification {
 
@@ -183,9 +152,5 @@ class AlarmService : Service() {
             context = this,
             fullScreenPendingIntent = fullScreenPendingIntent
         )
-    }
-
-    companion object {
-        private const val FOLLOW_UP_REQUEST_CODE = 1500
     }
 }

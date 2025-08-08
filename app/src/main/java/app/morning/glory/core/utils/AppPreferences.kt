@@ -93,20 +93,6 @@ object AppPreferences {
         }
 
 
-    /**
-     * Saving the time of sleep alarms...
-     * Saved when an alarm is scheduled
-     * Used for rescheduling
-     */
-    var followUpAlarmTime: Calendar?
-        get() = prefs.getTime(NAP_TIME, null)
-        set(value) {
-            prefs.edit { putTime(NAP_TIME, value) }
-        }
-
-
-
-
 
     // The key, getter and setter for displaying time or duration of the upcoming alarm
 
