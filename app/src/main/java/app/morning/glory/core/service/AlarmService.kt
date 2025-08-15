@@ -9,7 +9,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
-import app.morning.glory.core.audio.AlarmSoundPlayer
+import app.morning.glory.core.audio.AppSoundPlayer
 import app.morning.glory.core.extensions.applyLocalTime
 import app.morning.glory.core.notifications.AppNotificationManager
 import app.morning.glory.core.utils.AlarmType
@@ -29,7 +29,7 @@ class AlarmService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = localBinder
 
-    private lateinit var alarmSoundPlayer: AlarmSoundPlayer
+    private lateinit var appSoundPlayer: AppSoundPlayer
     private var isRunning = false
     private lateinit var alarmType: AlarmType
     private var snoozeCount: Int = 0
@@ -38,7 +38,7 @@ class AlarmService : Service() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate() {
         super.onCreate()
-        alarmSoundPlayer = AlarmSoundPlayer(this)
+        appSoundPlayer = AppSoundPlayer(this)
     }
 
     /// On Trigger: Start playing the sound and show the notification
@@ -54,7 +54,7 @@ class AlarmService : Service() {
             val alarmTypeString = intent.getStringExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY)
             alarmType = AlarmType.valueOfOrNull(alarmTypeString) ?: run {
                 // Stop service if alarm type wasn't received.. bad intent
-                alarmSoundPlayer.stopAlarm()
+                appSoundPlayer.stop()
                 stopSelf()
                 return START_NOT_STICKY
             }
@@ -64,10 +64,10 @@ class AlarmService : Service() {
             // Start in foreground with a notification
             startForeground(111, createNotification())
 
-            isRunning = true
-
             // Start playing the alarm sound
-            alarmSoundPlayer.playAlarm()
+            appSoundPlayer.playAlarm()
+
+            isRunning = true
         }
 
         return START_STICKY
@@ -83,7 +83,7 @@ class AlarmService : Service() {
     fun dismissAlarm() {
         if (!isRunning) return
 
-        alarmSoundPlayer.stopAlarm()
+        appSoundPlayer.release()
 
         // Clear the saved alarm time and reschedule in case of sleep alarm
         when (alarmType) {
@@ -122,7 +122,7 @@ class AlarmService : Service() {
         if (!isRunning) return
 
         Log.d("AlarmService", "Snooze count: $snoozeCount")
-        alarmSoundPlayer.stopAlarm()
+        appSoundPlayer.stop()
 
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, 2)

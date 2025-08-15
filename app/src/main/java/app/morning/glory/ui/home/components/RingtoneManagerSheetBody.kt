@@ -43,7 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
-import app.morning.glory.core.audio.RingtoneHelper
+import app.morning.glory.core.audio.AppSoundPlayer
 import app.morning.glory.core.audio.RingtoneInfo
 import app.morning.glory.core.utils.AppPreferences
 
@@ -53,6 +53,7 @@ import app.morning.glory.core.utils.AppPreferences
 @Composable
 fun RingtoneManagerSheetBody() {
     val context = LocalContext.current
+    val player = AppSoundPlayer(context)
     val savedRingtones = remember { mutableStateListOf<RingtoneInfo>(*AppPreferences.getRingtoneList().toTypedArray()) }
     val selectedRingtone = remember { mutableStateOf<Uri?>(AppPreferences.selectedRingtone) }
     var playingUri by remember { mutableStateOf<Uri?>(null) }
@@ -94,7 +95,7 @@ fun RingtoneManagerSheetBody() {
 
         AppPreferences.registerListener(listener)
         onDispose {
-            RingtoneHelper.stopRingtone()
+            player.release()
             AppPreferences.unregisterListener(listener)
         }
     }
@@ -122,10 +123,10 @@ fun RingtoneManagerSheetBody() {
                         isSelected = ringtone.uri == selectedRingtone.value,
                         trailingAction = {
                             if (ringtone.uri == playingUri) {
-                                RingtoneHelper.stopRingtone()
+                                player.stop()
                                 playingUri = null
                             } else {
-                                RingtoneHelper.playRingtone(context, ringtone.uri)
+                                player.playPreview(ringtone.uri)
                                 playingUri = ringtone.uri
                             }
                         }
