@@ -2,22 +2,31 @@ package app.morning.glory.core.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.core.content.edit
+import app.morning.glory.core.audio.RingtoneInfo
+import app.morning.glory.core.audio.UriTypeAdapter
 import app.morning.glory.core.extensions.getLocalTime
 import app.morning.glory.core.extensions.getTime
 import app.morning.glory.core.extensions.putLocalTime
 import app.morning.glory.core.extensions.putTime
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import java.time.LocalTime
 import java.util.Calendar
 
 object AppPreferences {
-    private lateinit var prefs: SharedPreferences
     var isInitialized : Boolean = false
+    private lateinit var prefs: SharedPreferences
+    private lateinit var gson: Gson
 
     // Initialize the SharedPreferences instance
     fun init(context: Context) {
         if (isInitialized) return
         prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        gson = GsonBuilder()
+            .registerTypeAdapter(Uri::class.java, UriTypeAdapter())
+            .create()
         isInitialized = true
     }
 
@@ -110,4 +119,40 @@ object AppPreferences {
         set(value) {
             prefs.edit { putBoolean(DISPLAY_NAP_DURATION_HINT_KEY, value) }
         }
+
+
+
+    // Ringtone preferences
+
+    const val RINGTONE_LIST_KEY = "ringtone_list"
+
+    fun getRingtoneList(): List<RingtoneInfo> {
+        val json = prefs.getString(RINGTONE_LIST_KEY, null) ?: return emptyList()
+        return try {
+            val type = com.google.gson.reflect.TypeToken.getParameterized(List::class.java, RingtoneInfo::class.java).type
+            gson.fromJson<List<RingtoneInfo>>(json, type) ?: emptyList()
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    fun addRingtone(ringtone: RingtoneInfo) {
+        val list = getRingtoneList().toMutableList()
+        if (list.none { it.uri == ringtone.uri }) {
+            list.add(ringtone)
+            saveRingtoneList(list)
+        }
+    }
+
+    fun removeRingtone(ringtone: RingtoneInfo) {
+        val list = getRingtoneList().toMutableList()
+        val newList = list.filter { it.uri != ringtone.uri }
+        saveRingtoneList(newList)
+    }
+
+    private fun saveRingtoneList(list: List<RingtoneInfo>) {
+        val json = gson.toJson(list)
+        prefs.edit { putString(RINGTONE_LIST_KEY, json) }
+    }
+
 }

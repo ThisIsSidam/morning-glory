@@ -6,13 +6,6 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 
-data class RingtoneInfo(
-    val name: String,
-    val uri: Uri
-)
-
-// Using as is right now to add and manage ringtones, would merge with AlarmSoundPlayer in the
-// future if possible
 object RingtoneHelper {
 
     private var currentRingtone: Ringtone? = null

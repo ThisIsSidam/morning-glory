@@ -2,15 +2,16 @@ package app.morning.glory.ui.home.components
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,7 +22,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import app.morning.glory.R
 import app.morning.glory.core.audio.RingtoneHelper
 import app.morning.glory.core.audio.RingtoneInfo
+import app.morning.glory.core.utils.AppPreferences
 
 
 @Preview()
@@ -47,7 +52,7 @@ import app.morning.glory.core.audio.RingtoneInfo
 @Composable
 fun RingtoneManagerSheetBody() {
     val context = LocalContext.current
-    val selectedRingtones = remember { mutableStateListOf<RingtoneInfo>() }
+    val selectedRingtones = remember { mutableStateListOf<RingtoneInfo>(*AppPreferences.getRingtoneList().toTypedArray()) }
     var playingUri by remember { mutableStateOf<Uri?>(null) }
 
     val ringtonePickerLauncher = rememberLauncherForActivityResult(
@@ -56,36 +61,37 @@ fun RingtoneManagerSheetBody() {
         if (result.resultCode == Activity.RESULT_OK) {
             val intentData: Intent? = result.data
 
-            // --- THIS IS THE UPDATED SECTION ---
-
             val uri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                // Use the new, type-safe method for Android 13 and above
                 intentData?.getParcelableExtra(
                     RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
                     Uri::class.java
                 )
             } else {
-                // Use the old, deprecated method for older Android versions
                 @Suppress("DEPRECATION")
                 intentData?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
             }
 
-            // --- END OF UPDATED SECTION ---
-
-
             uri?.let {
                 val ringtone = RingtoneManager.getRingtone(context, it)
                 val name = ringtone.getTitle(context)
-                selectedRingtones.add(RingtoneInfo(name, it))
+
+                AppPreferences.addRingtone(RingtoneInfo(name, it))
             }
         }
     }
 
-    // This effect will run when the composable is removed from the screen,
-    // ensuring any playing sound is stopped.
     DisposableEffect(Unit) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == AppPreferences.RINGTONE_LIST_KEY) {
+                selectedRingtones.clear()
+                selectedRingtones.addAll(AppPreferences.getRingtoneList())
+            }
+        }
+
+        AppPreferences.registerListener(listener)
         onDispose {
             RingtoneHelper.stopRingtone()
+            AppPreferences.unregisterListener(listener)
         }
     }
 
@@ -105,17 +111,15 @@ fun RingtoneManagerSheetBody() {
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                items(selectedRingtones){ ringtone ->
+                items(selectedRingtones, key = { it.uri }) { ringtone ->
                     RingtoneListItem(
                         ringtoneInfo = ringtone,
                         isPlaying = ringtone.uri == playingUri,
                         onActionClick = {
                             if (ringtone.uri == playingUri) {
-                                // If it's playing, stop it and clear the playing state.
                                 RingtoneHelper.stopRingtone()
                                 playingUri = null
                             } else {
-                                // If not playing, start it and set the playing state.
                                 RingtoneHelper.playRingtone(context, ringtone.uri)
                                 playingUri = ringtone.uri
                             }
@@ -138,6 +142,15 @@ fun RingtoneManagerSheetBody() {
         }) {
             Text(modifier = Modifier.padding(vertical = 4.dp), text = "Add Ringtone")
         }
+        if (selectedRingtones.isNotEmpty()) {
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            Text(
+                text = "Swipe to remove a ringtone",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+        Spacer(modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 
@@ -147,7 +160,19 @@ fun RingtoneListItem(
     isPlaying: Boolean,
     onActionClick: () -> Unit
 ) {
-    Box(
+    val state = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart || value == SwipeToDismissBoxValue.StartToEnd) {
+                AppPreferences.removeRingtone(ringtoneInfo)
+                true
+            }
+            false
+        }
+    )
+
+    SwipeToDismissBox(
+        state = state,
+        backgroundContent = {},
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp)
