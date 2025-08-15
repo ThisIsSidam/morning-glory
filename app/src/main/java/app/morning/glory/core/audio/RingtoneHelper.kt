@@ -1,0 +1,42 @@
+package app.morning.glory.core.audio
+
+import android.content.Context
+import android.media.AudioManager
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.net.Uri
+
+data class RingtoneInfo(
+    val name: String,
+    val uri: Uri
+)
+
+// Using as is right now to add and manage ringtones, would merge with AlarmSoundPlayer in the
+// future if possible
+object RingtoneHelper {
+
+    private var currentRingtone: Ringtone? = null
+
+    /**
+     * Plays a ringtone from a given URI. If another ringtone is playing, it will be stopped first.
+     */
+    fun playRingtone(context: Context, uri: Uri) {
+        // Stop any currently playing ringtone
+        stopRingtone()
+
+        currentRingtone = RingtoneManager.getRingtone(context, uri)
+        currentRingtone?.let {
+            // This is crucial to ensure the sound plays on the alarm audio stream.
+            it.streamType = AudioManager.STREAM_ALARM
+            it.play()
+        }
+    }
+
+    /**
+     * Stops the currently playing ringtone.
+     */
+    fun stopRingtone() {
+        currentRingtone?.stop()
+        currentRingtone = null
+    }
+}

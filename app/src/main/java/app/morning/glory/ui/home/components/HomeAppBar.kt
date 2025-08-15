@@ -26,11 +26,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
 import app.morning.glory.ui.home.HomeView
 import kotlinx.coroutines.launch
+
+enum class HomeSheet {
+    QRSheet,
+    RingtoneSheet,
+    NONE
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,18 +46,22 @@ fun HomeAppBar(
 ) {
     var coroutineScope = rememberCoroutineScope()
 
-    var showQRSheet by remember { mutableStateOf(false) }
+    var showHomeSheet by remember { mutableStateOf(HomeSheet.NONE) }
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
 
-    if (showQRSheet)
+    if (showHomeSheet != HomeSheet.NONE)
         ModalBottomSheet(
-            onDismissRequest = { showQRSheet = false },
+            onDismissRequest = { showHomeSheet = HomeSheet.NONE },
             sheetState = sheetState,
         ) {
-            QRCodeManagerSheetBody()
+            when (showHomeSheet) {
+                HomeSheet.QRSheet -> QRCodeManagerSheetBody()
+                HomeSheet.RingtoneSheet -> RingtoneManagerSheetBody()
+                HomeSheet.NONE -> {}
+            }
         }
 
     Column {
@@ -60,11 +71,20 @@ fun HomeAppBar(
             },
             actions = {
                 if (pagerState.currentPage == 0) // Change index if HomeView order changed
+                    IconButton(onClick = {
+                        showHomeSheet = HomeSheet.QRSheet
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = stringResource(R.string.lock_icon_content_description)
+                        )
+                    }
+
                 IconButton(onClick = {
-                    showQRSheet = true
+                    showHomeSheet = HomeSheet.RingtoneSheet
                 }) {
                     Icon(
-                        imageVector = Icons.Default.Lock,
+                        painter = painterResource(R.drawable.outline_queue_music_24),
                         contentDescription = stringResource(R.string.lock_icon_content_description)
                     )
                 }
