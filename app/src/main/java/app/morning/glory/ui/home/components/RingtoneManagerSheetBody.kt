@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -52,7 +53,8 @@ import app.morning.glory.core.utils.AppPreferences
 @Composable
 fun RingtoneManagerSheetBody() {
     val context = LocalContext.current
-    val selectedRingtones = remember { mutableStateListOf<RingtoneInfo>(*AppPreferences.getRingtoneList().toTypedArray()) }
+    val savedRingtones = remember { mutableStateListOf<RingtoneInfo>(*AppPreferences.getRingtoneList().toTypedArray()) }
+    val selectedRingtone = remember { mutableStateOf<Uri?>(AppPreferences.selectedRingtone) }
     var playingUri by remember { mutableStateOf<Uri?>(null) }
 
     val ringtonePickerLauncher = rememberLauncherForActivityResult(
@@ -83,8 +85,10 @@ fun RingtoneManagerSheetBody() {
     DisposableEffect(Unit) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == AppPreferences.RINGTONE_LIST_KEY) {
-                selectedRingtones.clear()
-                selectedRingtones.addAll(AppPreferences.getRingtoneList())
+                savedRingtones.clear()
+                savedRingtones.addAll(AppPreferences.getRingtoneList())
+            } else if (key == AppPreferences.SELECTED_RINGTONE_KEY) {
+                selectedRingtone.value = AppPreferences.selectedRingtone
             }
         }
 
@@ -100,7 +104,7 @@ fun RingtoneManagerSheetBody() {
         modifier = Modifier
             .fillMaxWidth(),
     ) {
-        if (selectedRingtones.isEmpty()) {
+        if (savedRingtones.isEmpty()) {
             Text(
                 text = "No audios added!",
                 style = MaterialTheme.typography.bodyLarge,
@@ -111,11 +115,12 @@ fun RingtoneManagerSheetBody() {
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                items(selectedRingtones, key = { it.uri }) { ringtone ->
+                items(savedRingtones, key = { it.uri }) { ringtone ->
                     RingtoneListItem(
                         ringtoneInfo = ringtone,
                         isPlaying = ringtone.uri == playingUri,
-                        onActionClick = {
+                        isSelected = ringtone.uri == selectedRingtone.value,
+                        trailingAction = {
                             if (ringtone.uri == playingUri) {
                                 RingtoneHelper.stopRingtone()
                                 playingUri = null
@@ -142,7 +147,7 @@ fun RingtoneManagerSheetBody() {
         }) {
             Text(modifier = Modifier.padding(vertical = 4.dp), text = "Add Ringtone")
         }
-        if (selectedRingtones.isNotEmpty()) {
+        if (savedRingtones.isNotEmpty()) {
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             Text(
                 text = "Swipe to remove a ringtone",
@@ -158,7 +163,8 @@ fun RingtoneManagerSheetBody() {
 fun RingtoneListItem(
     ringtoneInfo: RingtoneInfo,
     isPlaying: Boolean,
-    onActionClick: () -> Unit
+    isSelected: Boolean,
+    trailingAction: () -> Unit
 ) {
     val state = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
@@ -177,17 +183,39 @@ fun RingtoneListItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+            .background(
+                MaterialTheme.colorScheme.onSurface.copy(
+                    alpha = if (isSelected) 0.2f else 0.4f
+                ),
+            )
     ) {
         ListItem(
+            modifier = Modifier.clickable{
+                if (!isSelected) {
+                    AppPreferences.selectedRingtone = ringtoneInfo.uri
+                }
+            },
             headlineContent = {
                 Text(
                     text = ringtoneInfo.name,
                     style = MaterialTheme.typography.bodyLarge,
                 )
             },
+            supportingContent = {
+                if (isSelected) {
+                    Text(
+                        text = "Selected",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Text(
+                    text = "Tap to select",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            },
             trailingContent = {
-                Button(onClick = onActionClick) {
+                Button(onClick = trailingAction) {
                     Icon(
                         painter = painterResource(if (isPlaying) R.drawable.round_stop_24 else R.drawable.round_play_arrow_24),
                         contentDescription = if (isPlaying) "Pause" else "Play"

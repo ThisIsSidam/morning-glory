@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import app.morning.glory.core.audio.RingtoneInfo
 import app.morning.glory.core.audio.UriTypeAdapter
 import app.morning.glory.core.extensions.getLocalTime
@@ -122,7 +123,9 @@ object AppPreferences {
 
 
 
-    // Ringtone preferences
+    // -- -- Ringtone preferences -- -- //
+
+    // List of saved ringtones
 
     const val RINGTONE_LIST_KEY = "ringtone_list"
 
@@ -154,5 +157,14 @@ object AppPreferences {
         val json = gson.toJson(list)
         prefs.edit { putString(RINGTONE_LIST_KEY, json) }
     }
+
+    // Selected ringtone URI
+    const val SELECTED_RINGTONE_KEY = "selected_ringtone"
+
+    var selectedRingtone: Uri?
+        get() = prefs.getString(SELECTED_RINGTONE_KEY, null)?.toUri()
+        set(value) {
+            prefs.edit { putString(SELECTED_RINGTONE_KEY, value?.toString()) }
+        }
 
 }
