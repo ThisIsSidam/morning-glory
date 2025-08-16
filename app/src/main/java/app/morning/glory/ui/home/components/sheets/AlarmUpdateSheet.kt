@@ -1,4 +1,4 @@
-package app.morning.glory.ui.home.components
+package app.morning.glory.ui.home.components.sheets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package app.morning.glory.ui.home.components
+package app.morning.glory.ui.home.components.sheets
 
 import android.content.SharedPreferences
 import android.util.Log
