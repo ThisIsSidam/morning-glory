@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.view.WindowCompat
 import app.morning.glory.core.service.AlarmService
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
@@ -54,6 +55,9 @@ class AlarmActivity : ComponentActivity() {
 
         // Turn on the screen and show on lock screen
         turnScreenOnAndShowWhenLocked()
+
+        // To make activity edge-to-edge
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val snoozeCount = intent.getIntExtra(
             AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY,
