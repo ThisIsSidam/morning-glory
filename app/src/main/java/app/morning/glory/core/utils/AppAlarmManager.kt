@@ -96,7 +96,7 @@ object AppAlarmManager {
         // 30 Minutes before main alarm time, pre-alarm notification will be shown
         // Only for sleep alarms
         if (type == AlarmType.SLEEP) {
-            truncatedTime.add(Calendar.MINUTE, -30)
+            truncatedTime.add(Calendar.MINUTE, -AppPreferences.preAlarmNotifTime)
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 truncatedTime.timeInMillis,

@@ -39,6 +39,7 @@ fun OptionsSheet() {
         )
         SnoozeOptionTile()
         SnoozeDurationTile()
+        PreAlarmNotificationTimeTile()
     }
 }
 
@@ -203,6 +204,92 @@ fun SnoozeDurationTile() {
                                     showPopup = false
                                 },
                                 modifier = if (option == selectedSnoozeDur)
+                                    Modifier.background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                                else Modifier
+                            )
+                        }
+                    }
+                }
+            },
+        )
+    }
+}
+
+@Composable
+fun PreAlarmNotificationTimeTile() {
+    var showPopup by remember { mutableStateOf(false) }
+    var preAlarmTime by remember { mutableStateOf(AppPreferences.preAlarmNotifTime) }
+
+    DisposableEffect(Unit) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+            if (key == AppPreferences.PRE_ALARM_NOTIFICATION_TIME_KEY) {
+                preAlarmTime = AppPreferences.preAlarmNotifTime
+            }
+        }
+        AppPreferences.registerListener(listener)
+
+        onDispose {
+            AppPreferences.unregisterListener(listener)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { showPopup = true }
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
+    ) {
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = "Wake check time",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            supportingContent = {
+                Text(
+                    text = "How early the wake check notification should be sent",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            },
+            trailingContent = {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "$preAlarmTime min",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                if (showPopup) {
+                    DropdownMenu(
+                        expanded = true,
+                        onDismissRequest = { showPopup = false },
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.surface)
+                    ) {
+                        listOf(15, 30, 60).forEach { option ->
+                            androidx.compose.material3.DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "$option min",
+                                        color = if (option == preAlarmTime)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.onSurface
+                                    )
+                                },
+                                onClick = {
+                                    AppPreferences.preAlarmNotifTime = option
+                                    showPopup = false
+                                },
+                                modifier = if (option == preAlarmTime)
                                     Modifier.background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
                                 else Modifier
                             )
