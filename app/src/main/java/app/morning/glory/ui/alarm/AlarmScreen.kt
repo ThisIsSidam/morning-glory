@@ -74,7 +74,7 @@ fun AlarmScreen(
                     }
                 }
 
-                if (snoozeCount < 2) {
+                if (snoozeCount < AppPreferences.maxSnoozeCount) {
                     Button(
                         onClick = onSnooze,
                         modifier = Modifier

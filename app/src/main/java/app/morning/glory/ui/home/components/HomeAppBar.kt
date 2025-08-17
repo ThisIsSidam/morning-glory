@@ -27,10 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
 import app.morning.glory.ui.home.HomeView
+import app.morning.glory.ui.home.components.sheets.OptionsSheet
 import app.morning.glory.ui.home.components.sheets.QRCodeManagerSheetBody
 import app.morning.glory.ui.home.components.sheets.RingtoneManagerSheetBody
 import kotlinx.coroutines.launch
@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 enum class HomeSheet {
     QRSheet,
     RingtoneSheet,
+    OptionsSheet,
     NONE
 }
 
@@ -62,6 +63,7 @@ fun HomeAppBar(
             when (showHomeSheet) {
                 HomeSheet.QRSheet -> QRCodeManagerSheetBody()
                 HomeSheet.RingtoneSheet -> RingtoneManagerSheetBody()
+                HomeSheet.OptionsSheet -> OptionsSheet()
                 HomeSheet.NONE -> {}
             }
         }
@@ -73,21 +75,30 @@ fun HomeAppBar(
             },
             actions = {
                 if (pagerState.currentPage == 0) // Change index if HomeView order changed
-                    IconButton(onClick = {
-                        showHomeSheet = HomeSheet.QRSheet
-                    }) {
+                    IconButton(
+                        onClick = { showHomeSheet = HomeSheet.QRSheet }
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Lock,
-                            contentDescription = stringResource(R.string.lock_icon_content_description)
+                            contentDescription = "Lock Icon"
                         )
                     }
 
-                IconButton(onClick = {
-                    showHomeSheet = HomeSheet.RingtoneSheet
-                }) {
+                IconButton(
+                    onClick = { showHomeSheet = HomeSheet.RingtoneSheet }
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.outline_queue_music_24),
-                        contentDescription = stringResource(R.string.lock_icon_content_description)
+                        contentDescription = "Ringtone Icon"
+                    )
+                }
+
+                IconButton(
+                    onClick = { showHomeSheet = HomeSheet.OptionsSheet}
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.round_tune_24),
+                        contentDescription = "Options Icon"
                     )
                 }
             },

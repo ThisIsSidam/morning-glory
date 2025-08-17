@@ -8,7 +8,6 @@ import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -56,8 +55,11 @@ class AlarmActivity : ComponentActivity() {
         // Turn on the screen and show on lock screen
         turnScreenOnAndShowWhenLocked()
 
-        val snoozeCount = intent.getIntExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, 2)
-        
+        val snoozeCount = intent.getIntExtra(
+            AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY,
+            AppPreferences.DEFAULT_MAX_SNOOZE_COUNT
+        )
+
         setContent {
             MorningGloryTheme {
                 AlarmScreen(

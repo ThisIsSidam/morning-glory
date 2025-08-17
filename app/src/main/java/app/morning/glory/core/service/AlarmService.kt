@@ -125,7 +125,7 @@ class AlarmService : Service() {
         appSoundPlayer.stop()
 
         val time = Calendar.getInstance()
-        time.add(Calendar.MINUTE, 2)
+        time.add(Calendar.MINUTE, AppPreferences.snoozeDurationMinutes)
         AppAlarmManager.snoozeAlarm(applicationContext, time, AlarmType.SLEEP, snoozeCount+1)
 
         // Stop foreground and then service

@@ -167,4 +167,33 @@ object AppPreferences {
             prefs.edit { putString(SELECTED_RINGTONE_KEY, value?.toString()) }
         }
 
+
+
+    // User customizable options
+
+
+    const val MAX_SNOOZE_COUNT_KEY = "max_snooze_count"
+    const val DEFAULT_MAX_SNOOZE_COUNT = 2
+    var maxSnoozeCount: Int
+        get() = prefs.getInt(MAX_SNOOZE_COUNT_KEY, DEFAULT_MAX_SNOOZE_COUNT)
+        set(value) {
+            prefs.edit { putInt(MAX_SNOOZE_COUNT_KEY, value) }
+        }
+
+
+
+    const val SNOOZE_DURATION_KEY = "snooze_duration"
+    const val DEFAULT_SNOOZE_DURATION = 10 // in minutes
+
+    /**
+     * The duration for which the alarm will be snoozed
+     * Int is returned.. that is the number of minutes
+     * Default is 10 minutes
+     */
+    var snoozeDurationMinutes: Int
+        get() = prefs.getInt(SNOOZE_DURATION_KEY, DEFAULT_SNOOZE_DURATION)
+        set(value) {
+            prefs.edit { putInt(SNOOZE_DURATION_KEY, value) }
+        }
+
 }
