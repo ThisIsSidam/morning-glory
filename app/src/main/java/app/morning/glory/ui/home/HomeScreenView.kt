@@ -28,11 +28,12 @@ fun HomeScreenView(
     modifier: Modifier = Modifier,
     headerComposable: @Composable () -> Unit,
     durationHeadstart: Int,
+    initialTime: Calendar?,
     buttonsComposable: @Composable (Calendar) -> Unit
 ) {
 
     val context = LocalContext.current
-    var selectedTime by remember { mutableStateOf(Calendar.getInstance()) }
+    var selectedTime by remember { mutableStateOf(initialTime ?: Calendar.getInstance()) }
     var is24HourFormat by remember { mutableStateOf(DateFormat.is24HourFormat(context)) }
     var showTimePicker by remember { mutableStateOf(true) }
 
