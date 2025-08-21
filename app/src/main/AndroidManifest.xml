@@ -72,7 +72,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".core.receivers.PreAlarmReceiver"
+        <receiver android:name=".core.receivers.WakeCheckAlarmReceiver"
             android:enabled="true"
             android:exported="false"/>
 

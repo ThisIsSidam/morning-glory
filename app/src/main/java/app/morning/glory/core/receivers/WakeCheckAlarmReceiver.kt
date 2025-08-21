@@ -10,7 +10,7 @@ import app.morning.glory.core.notifications.AppNotificationManager
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 
-class PreAlarmReceiver: BroadcastReceiver() {
+class WakeCheckAlarmReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
 
@@ -20,7 +20,7 @@ class PreAlarmReceiver: BroadcastReceiver() {
 
         val actionPendingIntent = PendingIntent.getBroadcast(
             context,
-            PRE_ALARM_CODE,
+            WAKE_CHECK_ALARM_CODE,
             actionIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -33,7 +33,7 @@ class PreAlarmReceiver: BroadcastReceiver() {
             actionIcon = R.drawable.round_stop_24
         )
         val manager : NotificationManager = AppNotificationManager.getNotificationManager(context)
-        manager.notify(PRE_ALARM_CODE, notification)
+        manager.notify(WAKE_CHECK_ALARM_CODE, notification)
     }
 
     companion object {
@@ -41,6 +41,6 @@ class PreAlarmReceiver: BroadcastReceiver() {
          * A Code used both as pending intent's request code
          * and the notification's id.
          */
-        const val PRE_ALARM_CODE = 5123
+        const val WAKE_CHECK_ALARM_CODE = 5123
     }
 }

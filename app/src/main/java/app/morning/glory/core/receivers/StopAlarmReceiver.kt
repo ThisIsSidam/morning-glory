@@ -35,6 +35,6 @@ class StopAlarmReceiver : BroadcastReceiver() {
             AlarmType.NAP -> AppAlarmManager.cancelAlarm(context, AlarmType.NAP)
         }
         val manager = AppNotificationManager.getNotificationManager(context)
-        manager.cancel(PreAlarmReceiver.PRE_ALARM_CODE)
+        manager.cancel(WakeCheckAlarmReceiver.WAKE_CHECK_ALARM_CODE)
     }
 }

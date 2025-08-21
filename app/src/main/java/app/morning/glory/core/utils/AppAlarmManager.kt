@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import app.morning.glory.core.extensions.toLocalTime
 import app.morning.glory.core.extensions.truncateToSeconds
-import app.morning.glory.core.receivers.PreAlarmReceiver
+import app.morning.glory.core.receivers.WakeCheckAlarmReceiver
 import app.morning.glory.core.service.AlarmService
 import java.util.Calendar
 
@@ -32,7 +32,7 @@ object AppAlarmManager {
 
     const val ALARM_TYPE_EXTRA_KEY : String = "alarm-type"
     const val SNOOZE_COUNT_EXTRA_KEY : String = "snooze_count"
-    private const val PRE_ALARM_REQUEST_CODE = 2345
+    private const val WAKE_CHECK_ALARM_REQUEST_CODE = 2345
 
     /**
      * Creates the PendingIntent for the alarm.
@@ -57,11 +57,11 @@ object AppAlarmManager {
         )
     }
 
-    fun getPreAlarmPendingIntent(context: Context) : PendingIntent {
-        val intent = Intent(context, PreAlarmReceiver::class.java)
+    fun getWakeCheckAlarmPendingIntent(context: Context) : PendingIntent {
+        val intent = Intent(context, WakeCheckAlarmReceiver::class.java)
         return PendingIntent.getBroadcast(
             context,
-            PRE_ALARM_REQUEST_CODE,
+            WAKE_CHECK_ALARM_REQUEST_CODE,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -96,11 +96,11 @@ object AppAlarmManager {
         // 30 Minutes before main alarm time, pre-alarm notification will be shown
         // Only for sleep alarms
         if (type == AlarmType.SLEEP) {
-            truncatedTime.add(Calendar.MINUTE, -AppPreferences.preAlarmNotifTime)
+            truncatedTime.add(Calendar.MINUTE, -AppPreferences.wakeCheckAlarmTime)
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 truncatedTime.timeInMillis,
-                getPreAlarmPendingIntent(context)
+                getWakeCheckAlarmPendingIntent(context)
             )
         }
     }

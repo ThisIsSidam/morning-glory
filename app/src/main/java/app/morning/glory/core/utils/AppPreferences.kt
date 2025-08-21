@@ -197,15 +197,15 @@ object AppPreferences {
         }
 
 
-    const val PRE_ALARM_NOTIFICATION_TIME_KEY = "pre_alarm_notification_time"
+    const val WAKE_CHECK_ALARM_TIME_KEY = "pre_alarm_notification_time"
     const val DEFAULT_PRE_ALARM_NOTIFICATION_TIME = 30 // in minutes
     /**
      * The time before the alarm when the pre-alarm notification will be shown
      * Default is 30 minutes earlier
      */
-    var preAlarmNotifTime: Int
-        get() = prefs.getInt(PRE_ALARM_NOTIFICATION_TIME_KEY, DEFAULT_PRE_ALARM_NOTIFICATION_TIME)
+    var wakeCheckAlarmTime: Int
+        get() = prefs.getInt(WAKE_CHECK_ALARM_TIME_KEY, DEFAULT_PRE_ALARM_NOTIFICATION_TIME)
         set(value) {
-            prefs.edit { putInt(PRE_ALARM_NOTIFICATION_TIME_KEY, value) }
+            prefs.edit { putInt(WAKE_CHECK_ALARM_TIME_KEY, value) }
         }
 }

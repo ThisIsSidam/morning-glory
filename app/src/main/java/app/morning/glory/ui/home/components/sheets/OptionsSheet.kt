@@ -47,7 +47,7 @@ fun OptionsSheet() {
         )
         SnoozeOptionTile()
         SnoozeDurationTile()
-        PreAlarmNotificationTimeTile()
+        WakeCheckAlarmTimeTile()
     }
 }
 
@@ -222,14 +222,14 @@ fun SnoozeDurationTile() {
 }
 
 @Composable
-fun PreAlarmNotificationTimeTile() {
+fun WakeCheckAlarmTimeTile() {
     var showPopup by remember { mutableStateOf(false) }
-    var preAlarmTime by remember { mutableStateOf(AppPreferences.preAlarmNotifTime) }
+    var wakeCheckTime by remember { mutableStateOf(AppPreferences.wakeCheckAlarmTime) }
 
     DisposableEffect(Unit) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
-            if (key == AppPreferences.PRE_ALARM_NOTIFICATION_TIME_KEY) {
-                preAlarmTime = AppPreferences.preAlarmNotifTime
+            if (key == AppPreferences.WAKE_CHECK_ALARM_TIME_KEY) {
+                wakeCheckTime = AppPreferences.wakeCheckAlarmTime
             }
         }
         AppPreferences.registerListener(listener)
@@ -267,7 +267,7 @@ fun PreAlarmNotificationTimeTile() {
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = "$preAlarmTime min",
+                        text = "$wakeCheckTime min",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -284,17 +284,17 @@ fun PreAlarmNotificationTimeTile() {
                                 text = {
                                     Text(
                                         text = "$option min",
-                                        color = if (option == preAlarmTime)
+                                        color = if (option == wakeCheckTime)
                                             MaterialTheme.colorScheme.primary
                                         else
                                             MaterialTheme.colorScheme.onSurface
                                     )
                                 },
                                 onClick = {
-                                    AppPreferences.preAlarmNotifTime = option
+                                    AppPreferences.wakeCheckAlarmTime = option
                                     showPopup = false
                                 },
-                                modifier = if (option == preAlarmTime)
+                                modifier = if (option == wakeCheckTime)
                                     Modifier.background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
                                 else Modifier
                             )
