@@ -5,6 +5,8 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
+import app.morning.glory.R
 import app.morning.glory.core.utils.AppPreferences
 
 /**
@@ -28,15 +30,10 @@ class AppSoundPlayer(private val context: Context) {
      * Plays a sound from the given URI for the alarm.
      * The sound will loop until stop() is called.
      */
-    fun playAlarm() {
-        val ringtoneUri = AppPreferences.selectedRingtone
-        if (ringtoneUri == null) {
-            // TODO: Handle the case where no ringtone is selected.
-            Log.e(TAG, "No ringtone selected. Cannot play alarm sound.")
-            return
-        }
-        startPlayback(ringtoneUri, PlaybackMode.ALARM)
-    }
+   fun playAlarm() {
+       var ringtoneUri = AppPreferences.selectedRingtone ?: getDefaultRingtoneUri(context)
+       startPlayback(ringtoneUri, PlaybackMode.ALARM)
+   }
 
     /**
      * Plays a sound from the given URI as a preview.
@@ -141,5 +138,10 @@ class AppSoundPlayer(private val context: Context) {
 
     companion object {
         private const val TAG = "SoundPlayer"
+
+        fun getDefaultRingtoneUri(context: Context): Uri {
+            // Return the default alarm sound URI
+            return "android.resource://${context.packageName}/${R.raw.alarm_sound}".toUri()
+        }
     }
 }

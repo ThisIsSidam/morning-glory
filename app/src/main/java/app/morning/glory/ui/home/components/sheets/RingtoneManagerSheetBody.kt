@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
@@ -54,8 +53,12 @@ import app.morning.glory.core.utils.AppPreferences
 fun RingtoneManagerSheetBody() {
     val context = LocalContext.current
     val player = AppSoundPlayer(context)
+    val defInfo = RingtoneInfo(
+        name = "Acoustic Guitar (Default)",
+        uri = AppSoundPlayer.getDefaultRingtoneUri(context)
+    )
     val savedRingtones = remember { mutableStateListOf<RingtoneInfo>(*AppPreferences.getRingtoneList().toTypedArray()) }
-    val selectedRingtone = remember { mutableStateOf<Uri?>(AppPreferences.selectedRingtone) }
+    val selectedRingtone = remember { mutableStateOf<Uri>(AppPreferences.selectedRingtone ?: defInfo.uri) }
     var playingUri by remember { mutableStateOf<Uri?>(null) }
 
     val ringtonePickerLauncher = rememberLauncherForActivityResult(
@@ -89,7 +92,7 @@ fun RingtoneManagerSheetBody() {
                 savedRingtones.clear()
                 savedRingtones.addAll(AppPreferences.getRingtoneList())
             } else if (key == AppPreferences.SELECTED_RINGTONE_KEY) {
-                selectedRingtone.value = AppPreferences.selectedRingtone
+                selectedRingtone.value = AppPreferences.selectedRingtone ?: defInfo.uri
             }
         }
 
@@ -105,33 +108,41 @@ fun RingtoneManagerSheetBody() {
         modifier = Modifier
             .fillMaxWidth(),
     ) {
-        if (savedRingtones.isEmpty()) {
-            Text(
-                text = "No audios added!",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(32.dp)
-            )
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                items(savedRingtones, key = { it.uri }) { ringtone ->
-                    RingtoneListItem(
-                        ringtoneInfo = ringtone,
-                        isPlaying = ringtone.uri == playingUri,
-                        isSelected = ringtone.uri == selectedRingtone.value,
-                        trailingAction = {
-                            if (ringtone.uri == playingUri) {
-                                player.stop()
-                                playingUri = null
-                            } else {
-                                player.playPreview(ringtone.uri)
-                                playingUri = ringtone.uri
-                            }
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            item {
+                RingtoneListItem(
+                    isRemovable = false,
+                    ringtoneInfo = defInfo,
+                    isPlaying = playingUri == defInfo.uri,
+                    isSelected = selectedRingtone.value == defInfo.uri,
+                    trailingAction = {
+                        if (playingUri == defInfo.uri) {
+                            player.stop()
+                            playingUri = null
+                        } else {
+                            player.playPreview(defInfo.uri)
+                            playingUri = defInfo.uri
                         }
-                    )
-                }
+                    }
+                )
+            }
+            items(savedRingtones, key = { it.uri }) { ringtoneInfo ->
+                RingtoneListItem(
+                    ringtoneInfo = ringtoneInfo,
+                    isPlaying = playingUri == ringtoneInfo.uri,
+                    isSelected = selectedRingtone.value == ringtoneInfo.uri,
+                    trailingAction = {
+                        if (playingUri == ringtoneInfo.uri) {
+                            player.stop()
+                            playingUri = null
+                        } else {
+                            player.playPreview(ringtoneInfo.uri)
+                            playingUri = ringtoneInfo.uri
+                        }
+                    }
+                )
             }
         }
         Button(
@@ -162,6 +173,7 @@ fun RingtoneManagerSheetBody() {
 
 @Composable
 fun RingtoneListItem(
+    isRemovable: Boolean = true,
     ringtoneInfo: RingtoneInfo,
     isPlaying: Boolean,
     isSelected: Boolean,
@@ -169,6 +181,7 @@ fun RingtoneListItem(
 ) {
     val state = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
+            if (!isRemovable) false
             if (value == SwipeToDismissBoxValue.EndToStart || value == SwipeToDismissBoxValue.StartToEnd) {
                 AppPreferences.removeRingtone(ringtoneInfo)
                 true
