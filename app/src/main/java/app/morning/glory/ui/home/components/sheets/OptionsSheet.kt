@@ -6,7 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -27,11 +30,16 @@ import app.morning.glory.core.utils.AppPreferences
 
 @Composable
 fun OptionsSheet() {
+
+    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.
-            padding(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp, horizontal = 16.dp)
+            .padding(bottom = bottomPadding)
     ) {
         Text(
             text = "Options",
@@ -64,7 +72,6 @@ fun SnoozeOptionTile() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(16.dp))
             .clickable { showPopup = true }
             .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
@@ -150,7 +157,6 @@ fun SnoozeDurationTile() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(16.dp))
             .clickable { showPopup = true }
             .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
@@ -236,7 +242,6 @@ fun PreAlarmNotificationTimeTile() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(16.dp))
             .clickable { showPopup = true }
             .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
