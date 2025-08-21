@@ -22,3 +22,7 @@ A minimalist alarm app that I made according to my own personal needs of having 
 ## Extra
 
 I had also added this feature called 'Follow-up Notification'. A certain time after the alarm, a notification would be sent to check whether the user is awake or not, if not dismissed, it would setup the alarm again. It was for times a person goes back to sleep after dismissing the alarm. Although I removed it because it gave the user a thought that the follow-up would wake them, leading them to have less resistence in falling back to sleep. 
+
+## License
+
+This project is licensed under the GNU GPL3. See the [LICENSE](LICENSE) file for details.
