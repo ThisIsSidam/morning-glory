@@ -44,6 +44,7 @@ fun OptionsSheet() {
         Text(
             text = "Options",
             style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 4.dp)
         )
         SnoozeOptionTile()
         SnoozeDurationTile()

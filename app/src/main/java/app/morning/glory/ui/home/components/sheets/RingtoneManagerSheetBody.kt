@@ -13,7 +13,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -51,7 +54,9 @@ import app.morning.glory.core.utils.AppPreferences
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RingtoneManagerSheetBody() {
+
     val context = LocalContext.current
+    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val player = AppSoundPlayer(context)
     val defInfo = RingtoneInfo(
         name = "Acoustic Guitar (Default)",
@@ -106,7 +111,9 @@ fun RingtoneManagerSheetBody() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(vertical = 12.dp, horizontal = 16.dp)
+            .padding(bottom = bottomPadding)
     ) {
         LazyColumn(
             contentPadding = PaddingValues(vertical = 8.dp)
@@ -167,7 +174,6 @@ fun RingtoneManagerSheetBody() {
                 modifier = Modifier.padding(8.dp)
             )
         }
-        Spacer(modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 

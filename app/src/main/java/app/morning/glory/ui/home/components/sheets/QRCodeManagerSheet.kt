@@ -5,8 +5,11 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +34,8 @@ import com.journeyapps.barcodescanner.ScanOptions
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QRCodeManagerSheetBody() {
+
+    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     var alarmCode by remember {mutableStateOf(AppPreferences.alarmCode)}
 
     DisposableEffect(Unit) {
@@ -50,7 +55,8 @@ fun QRCodeManagerSheetBody() {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(vertical = 12.dp, horizontal = 16.dp)
+            .padding(bottom = bottomPadding)
     ) {
         Text(
             text = "Saved QR Codes",
@@ -66,16 +72,14 @@ fun QRCodeManagerSheetBody() {
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(36.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         AddNewQRCode()
 
-        Spacer(modifier = Modifier.height(24.dp))
 
         if (alarmCode != null ) {
-            DeleteExistingCodeButton(alarmCode!!)
-
             Spacer(modifier = Modifier.height(16.dp))
+            DeleteExistingCodeButton(alarmCode!!)
         }
     }
 }
