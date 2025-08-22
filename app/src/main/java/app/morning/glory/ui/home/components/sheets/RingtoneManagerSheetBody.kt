@@ -10,14 +10,18 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +32,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -42,7 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
 import app.morning.glory.core.audio.AppSoundPlayer
@@ -50,7 +54,6 @@ import app.morning.glory.core.audio.RingtoneInfo
 import app.morning.glory.core.utils.AppPreferences
 
 
-@Preview()
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RingtoneManagerSheetBody() {
@@ -109,12 +112,19 @@ fun RingtoneManagerSheetBody() {
     }
 
     Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp, horizontal = 16.dp)
             .padding(bottom = bottomPadding)
     ) {
+        Text(
+            text = "Ringtones",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
         LazyColumn(
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
@@ -152,20 +162,7 @@ fun RingtoneManagerSheetBody() {
                 )
             }
         }
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp),
-            onClick = {
-            val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
-                putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
-                putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Alarm Sound")
-                putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, null as Uri?)
-            }
-            ringtonePickerLauncher.launch(intent)
-        }) {
-            Text(modifier = Modifier.padding(vertical = 4.dp), text = "Add Ringtone")
-        }
+
         if (savedRingtones.isNotEmpty()) {
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             Text(
@@ -174,6 +171,23 @@ fun RingtoneManagerSheetBody() {
                 modifier = Modifier.padding(8.dp)
             )
         }
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+                    putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+                    putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Alarm Sound")
+                    putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, null as Uri?)
+                }
+                ringtonePickerLauncher.launch(intent)
+            }
+        ) {
+            Text(modifier = Modifier.padding(vertical = 4.dp), text = "Add Ringtone")
+        }
+
+        RingtoneRandomizeTile()
+
     }
 }
 
@@ -201,7 +215,6 @@ fun RingtoneListItem(
         backgroundContent = {},
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(
                 MaterialTheme.colorScheme.onSurface.copy(
@@ -245,3 +258,58 @@ fun RingtoneListItem(
         )
     }
 }
+
+@Composable
+fun RingtoneRandomizeTile() {
+    var randomizeTones by remember { mutableStateOf(AppPreferences.randomizeRingtones) }
+
+    DisposableEffect(Unit) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+            if (key == AppPreferences.RANDOMIZE_RINGTONES_KEY) {
+                randomizeTones = AppPreferences.randomizeRingtones
+            }
+        }
+        AppPreferences.registerListener(listener)
+
+        onDispose {
+            AppPreferences.unregisterListener(listener)
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = "Randomize Ringtones",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            // Add a small spacer if needed, or rely on line height
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "Ringtones are randomly selected for each alarm so you don't get bored",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Switch(
+            checked = randomizeTones,
+            onCheckedChange = {
+                randomizeTones = it
+                 AppPreferences.randomizeRingtones = it
+            }
+        )
+    }
+}
+

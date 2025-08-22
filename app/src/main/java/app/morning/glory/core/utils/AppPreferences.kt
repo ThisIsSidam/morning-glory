@@ -208,4 +208,16 @@ object AppPreferences {
         set(value) {
             prefs.edit { putInt(WAKE_CHECK_ALARM_TIME_KEY, value) }
         }
+
+
+    const val RANDOMIZE_RINGTONES_KEY = "randomize_ringtones"
+    /**
+     * Whether to randomize ringtones for each alarm or not
+     * Default is false
+     */
+    var randomizeRingtones: Boolean
+        get() = prefs.getBoolean(RANDOMIZE_RINGTONES_KEY, false)
+        set(value) {
+            prefs.edit { putBoolean(RANDOMIZE_RINGTONES_KEY, value) }
+        }
 }
