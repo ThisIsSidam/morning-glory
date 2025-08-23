@@ -11,7 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -82,18 +81,16 @@ fun RingtoneManagerSheetContent() {
             modifier = Modifier.padding(bottom = 4.dp)
         )
 
-        LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
+        LazyColumn {
             items(uiState.savedRingtones, key = { it.uri }) { ringtoneInfo ->
                 RingtoneListItem(ringtoneInfo = ringtoneInfo)
             }
         }
 
         if (uiState.savedRingtones.isNotEmpty()) {
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
             Text(
                 text = "Swipe to remove a ringtone",
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(8.dp)
             )
         }
 
@@ -136,11 +133,26 @@ fun RingtoneListItem(ringtoneInfo: RingtoneInfo) {
         }
     )
 
-    SwipeToDismissBox(state = state, backgroundContent = { /* ... */ }) {
+    SwipeToDismissBox(
+        state = state,
+        backgroundContent = {},
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                MaterialTheme.colorScheme.onSurface.copy(
+                    alpha = if (isSelected) 0.2f else 0.4f
+                ),
+            )
+    ) {
         ListItem(
             modifier = Modifier.clickable { viewModel.selectRingtone(ringtoneInfo.uri) },
             headlineContent = { Text(text = ringtoneInfo.name, style = MaterialTheme.typography.bodyLarge) },
             supportingContent = {
+                if (uiState.randomizeTones) {
+                    Text("Included in random pool", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                }
                 if (isSelected) {
                     Text("Selected", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                 } else {
