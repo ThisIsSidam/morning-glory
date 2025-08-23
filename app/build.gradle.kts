@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.zxing.core)
     implementation(libs.gson)
+    implementation(libs.viewmodel.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

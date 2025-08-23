@@ -40,13 +40,13 @@ class AppSoundPlayer(private val context: Context) {
      * If another sound is already playing, it will be stopped first.
      * The sound will not loop.
      */
-    fun playPreview(uri: Uri) {
+    fun playPreview(uri: Uri, onStop: () -> Unit) {
         // The core logic from RingtoneHelper: stop previous sound before playing the new one.
         stop()
-        startPlayback(uri, PlaybackMode.PREVIEW)
+        startPlayback(uri, PlaybackMode.PREVIEW, onStop)
     }
 
-    private fun startPlayback(uri: Uri, mode: PlaybackMode) {
+    private fun startPlayback(uri: Uri, mode: PlaybackMode, onPlaybackStopped: () -> Unit = {}) {
         if (isSoundPlaying) {
             Log.d(TAG, "Player is already active. Ignoring new request for now.")
             // Or call stop() here if you always want to interrupt.
@@ -75,6 +75,7 @@ class AppSoundPlayer(private val context: Context) {
 
                 setOnErrorListener { _, what, extra ->
                     Log.e(TAG, "MediaPlayer error. What: $what, Extra: $extra")
+                    onPlaybackStopped
                     resetPlayerState()
                     true // Error was handled
                 }
@@ -82,6 +83,7 @@ class AppSoundPlayer(private val context: Context) {
                 setOnCompletionListener {
                     // Only relevant for non-looping sounds (PREVIEW)
                     Log.d(TAG, "Playback completed.")
+                    onPlaybackStopped()
                     resetPlayerState()
                 }
 
