@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import app.morning.glory.R
 import app.morning.glory.ui.home.HomeView
 import app.morning.glory.ui.home.components.sheets.OptionsSheet
-import app.morning.glory.ui.home.components.sheets.QRCodeManagerSheetBody
-import app.morning.glory.ui.home.components.sheets.RingtoneManagerSheetBody
+import app.morning.glory.ui.home.components.sheets.QRCodeManagerSheet
+import app.morning.glory.ui.home.components.sheets.RingtoneManagerSheet
 import kotlinx.coroutines.launch
 
 enum class HomeSheet {
@@ -61,8 +61,8 @@ fun HomeAppBar(
             sheetState = sheetState,
         ) {
             when (showHomeSheet) {
-                HomeSheet.QRSheet -> QRCodeManagerSheetBody()
-                HomeSheet.RingtoneSheet -> RingtoneManagerSheetBody()
+                HomeSheet.QRSheet -> QRCodeManagerSheet()
+                HomeSheet.RingtoneSheet -> RingtoneManagerSheet()
                 HomeSheet.OptionsSheet -> OptionsSheet()
                 HomeSheet.NONE -> {}
             }

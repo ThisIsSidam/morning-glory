@@ -33,7 +33,7 @@ import com.journeyapps.barcodescanner.ScanOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QRCodeManagerSheetBody() {
+fun QRCodeManagerSheet() {
 
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     var alarmCode by remember {mutableStateOf(AppPreferences.alarmCode)}

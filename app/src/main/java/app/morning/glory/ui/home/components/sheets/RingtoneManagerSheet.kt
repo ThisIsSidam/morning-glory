@@ -54,7 +54,7 @@ val LocalRingtoneViewModel = compositionLocalOf<RingtoneViewModel> {
 }
 
 @Composable
-fun RingtoneManagerSheetBody(viewModel: RingtoneViewModel = viewModel()) {
+fun RingtoneManagerSheet(viewModel: RingtoneViewModel = viewModel()) {
     CompositionLocalProvider(LocalRingtoneViewModel provides viewModel) {
         RingtoneManagerSheetContent()
     }
