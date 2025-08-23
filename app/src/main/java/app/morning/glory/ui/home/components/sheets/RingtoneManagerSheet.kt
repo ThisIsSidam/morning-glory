@@ -42,11 +42,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.morning.glory.R
 import app.morning.glory.core.audio.RingtoneInfo
+import app.morning.glory.core.extensions.toast
 import app.morning.glory.ui.home.viewmodels.RingtoneViewModel
 
 val LocalRingtoneViewModel = compositionLocalOf<RingtoneViewModel> {
@@ -81,13 +83,6 @@ fun RingtoneManagerSheetContent() {
         )
 
         LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
-            item {
-                RingtoneListItem(
-                    isRemovable = false,
-                    ringtoneInfo = uiState.defaultRingtone,
-                )
-            }
-
             items(uiState.savedRingtones, key = { it.uri }) { ringtoneInfo ->
                 RingtoneListItem(ringtoneInfo = ringtoneInfo)
             }
@@ -112,10 +107,8 @@ fun RingtoneManagerSheetContent() {
 }
 
 @Composable
-fun RingtoneListItem(
-    isRemovable: Boolean = true,
-    ringtoneInfo: RingtoneInfo,
-) {
+fun RingtoneListItem(ringtoneInfo: RingtoneInfo) {
+    val context = LocalContext.current
     val viewModel = LocalRingtoneViewModel.current
     val uiState by viewModel.uiState.collectAsState()
     val isPlaying = uiState.playingUri == ringtoneInfo.uri
@@ -123,7 +116,17 @@ fun RingtoneListItem(
 
     val state = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            if (!isRemovable) return@rememberSwipeToDismissBoxState false
+            // Prevent dismissal if there are less than 2 ringtones, i.e. only 1 ringtone
+            if (uiState.savedRingtones.size < 2) {
+                context.toast("You must keep at least one ringtone")
+                return@rememberSwipeToDismissBoxState false
+            }
+
+            if (uiState.selectedRingtoneUri == ringtoneInfo.uri) {
+                context.toast("You cannot remove the selected ringtone")
+                return@rememberSwipeToDismissBoxState false
+            }
+
             if (value == SwipeToDismissBoxValue.EndToStart || value == SwipeToDismissBoxValue.StartToEnd) {
                 viewModel.removeRingtone(ringtoneInfo)
                 true

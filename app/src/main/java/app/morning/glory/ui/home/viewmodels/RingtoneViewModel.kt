@@ -17,7 +17,6 @@ data class RingtoneUiState(
     val selectedRingtoneUri: Uri? = null,
     val randomizeTones: Boolean = false,
     val playingUri: Uri? = null,
-    val defaultRingtone: RingtoneInfo
 )
 
 class RingtoneViewModel(application: Application) : AndroidViewModel(application) {
@@ -29,9 +28,7 @@ class RingtoneViewModel(application: Application) : AndroidViewModel(application
     )
 
     // Private mutable state flow, only the ViewModel can modify it.
-    private val _uiState = MutableStateFlow(
-        RingtoneUiState(defaultRingtone = defaultRingtoneInfo)
-    )
+    private val _uiState = MutableStateFlow(RingtoneUiState())
 
     // Public, read-only state flow for the UI to observe.
     val uiState = _uiState.asStateFlow()
@@ -65,11 +62,16 @@ class RingtoneViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun loadInitialState() {
+        val ringtones = AppPreferences.getRingtoneList().toMutableList()
+        if (ringtones.isEmpty()) {
+            AppPreferences.addRingtone(defaultRingtoneInfo)
+            ringtones.add(defaultRingtoneInfo)
+        }
+
         _uiState.value = RingtoneUiState(
-            savedRingtones = AppPreferences.getRingtoneList(),
+            savedRingtones = ringtones,
             selectedRingtoneUri = AppPreferences.selectedRingtone ?: defaultRingtoneInfo.uri,
             randomizeTones = AppPreferences.randomizeRingtones,
-            defaultRingtone = defaultRingtoneInfo
         )
     }
 
