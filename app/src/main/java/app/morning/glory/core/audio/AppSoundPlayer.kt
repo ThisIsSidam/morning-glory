@@ -31,7 +31,13 @@ class AppSoundPlayer(private val context: Context) {
      * The sound will loop until stop() is called.
      */
    fun playAlarm() {
-       var ringtoneUri = AppPreferences.selectedRingtone ?: getDefaultRingtoneUri(context)
+       val randomized = AppPreferences.randomizeRingtones
+       val ringtoneUri = if (randomized) {
+           AppPreferences.getRingtoneList().randomOrNull()?.uri ?: getDefaultRingtoneUri(context)
+       } else {
+           AppPreferences.selectedRingtone ?: getDefaultRingtoneUri(context)
+       }
+
        startPlayback(ringtoneUri, PlaybackMode.ALARM)
    }
 
