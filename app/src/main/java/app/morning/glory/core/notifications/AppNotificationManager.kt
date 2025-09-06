@@ -35,8 +35,6 @@ object AppNotificationManager {
             .build()
     }
 
-
-
     fun createAlarmNotification(
         context: Context,
         fullScreenPendingIntent: PendingIntent
@@ -56,5 +54,10 @@ object AppNotificationManager {
             .setOngoing(true)
             .setAutoCancel(false)
             .build()
+    }
+
+    fun cancelAlarm(context: Context, notificationId: Int) {
+        val manager = getNotificationManager(context)
+        manager.cancel(notificationId)
     }
 }

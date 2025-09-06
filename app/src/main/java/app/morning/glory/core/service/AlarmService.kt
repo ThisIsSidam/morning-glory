@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import app.morning.glory.core.audio.AppSoundPlayer
 import app.morning.glory.core.extensions.applyLocalTime
 import app.morning.glory.core.notifications.AppNotificationManager
+import app.morning.glory.core.receivers.WakeCheckAlarmReceiver
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
@@ -66,6 +67,9 @@ class AlarmService : Service() {
 
             // Start playing the alarm sound
             appSoundPlayer.playAlarm()
+
+            // Remove the wake check notification if present
+            AppNotificationManager.cancelAlarm(applicationContext, WakeCheckAlarmReceiver.WAKE_CHECK_ALARM_CODE)
 
             isRunning = true
         }
