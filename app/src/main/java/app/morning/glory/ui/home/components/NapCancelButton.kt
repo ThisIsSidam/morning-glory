@@ -1,10 +1,10 @@
 package app.morning.glory.ui.home.components
 
 import android.content.SharedPreferences
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,15 +16,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import app.morning.glory.core.extensions.friendly
 import app.morning.glory.core.extensions.toast
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
-import java.util.Calendar
 
 @Composable
-fun NapButtons(time: Calendar) {
+fun NapCancelButton() {
 
     val context = LocalContext.current
     var napTime by remember { mutableStateOf(AppPreferences.napAlarmTime) }
@@ -43,30 +41,19 @@ fun NapButtons(time: Calendar) {
         }
     }
 
-    Row {
-        if (napTime != null)
-            Button(
-                onClick = {
-                    AppAlarmManager.cancelAlarm(context, AlarmType.NAP)
-                    context.toast("Cancelled Alarm")
-                },
-                modifier = Modifier
-                    .padding(horizontal = 32.dp, vertical = 16.dp)
-            ) {
-                Text("Cancel")
-            }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
+    AnimatedVisibility(
+        visible = napTime != null,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Button(
             onClick = {
-                AppAlarmManager.scheduleAlarm(context, time, AlarmType.NAP)
-                context.toast("Scheduled time: ${time.friendly(context)}")
+                AppAlarmManager.cancelAlarm(context, AlarmType.NAP)
+                context.toast("Cancelled Alarm")
             },
             modifier = Modifier
                 .padding(horizontal = 32.dp, vertical = 16.dp)
-        ) {
-            Text(if (napTime != null) "Update" else "Set Alarm")
-        }
+        ) { Text("Cancel") }
     }
+
 }
