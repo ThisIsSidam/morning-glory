@@ -7,12 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import app.morning.glory.core.utils.AppPreferences
-import app.morning.glory.ui.home.components.ButtonSection
 import app.morning.glory.ui.home.components.HomeAppBar
-import app.morning.glory.ui.home.components.NapButtons
-import app.morning.glory.ui.home.components.NapHeader
-import app.morning.glory.ui.home.components.SleepHeader
 
 enum class HomeView(val title: String) {
     SLEEP("Sleep"),
@@ -22,34 +17,20 @@ enum class HomeView(val title: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
-
-    var pagerState = rememberPagerState { HomeView.entries.size }
+    val pagerState = rememberPagerState { HomeView.entries.size }
 
     Scaffold(
         topBar = { HomeAppBar(pagerState) }
-    )  { innerPadding ->
+    ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.padding(innerPadding)
         ) { page ->
 
-            val view = HomeView.entries[page]
-
-            when (view) {
-                HomeView.SLEEP -> HomeScreenView(
-                    headerComposable = { SleepHeader() },
-                    buttonsComposable = { time ->  ButtonSection(time) },
-                    initialTime = AppPreferences.sleepAlarmTime,
-                    durationHeadstart = 7 * 60 + 30
-                )
-                HomeView.NAP -> HomeScreenView(
-                    headerComposable = { NapHeader() },
-                    buttonsComposable = { time -> NapButtons(time) },
-                    initialTime = AppPreferences.napAlarmTime,
-                    durationHeadstart = 20
-                )
+            when (HomeView.entries[page]) {
+                HomeView.SLEEP -> SleepView()
+                HomeView.NAP -> NapView()
             }
         }
     }
 }
-
