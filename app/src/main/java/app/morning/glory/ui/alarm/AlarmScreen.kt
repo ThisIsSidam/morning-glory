@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.morning.glory.R
 import app.morning.glory.core.extensions.toast
+import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.ui.qr_scanner.ScannerActivity
 import com.journeyapps.barcodescanner.ScanContract
@@ -51,6 +52,7 @@ import java.util.Locale
 
 @Composable
 fun AlarmScreen(
+    alarmType: AlarmType,
     onDismiss: () -> Unit = {},
     onSnooze: () -> Unit,
     snoozeCount: Int
@@ -103,7 +105,7 @@ fun AlarmScreen(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (alarmCode != null) {
+                if (alarmCode != null && alarmType == AlarmType.SLEEP) {
                     ScanQRButton(alarmCode!!, onDismiss)
                 } else {
                     Button(

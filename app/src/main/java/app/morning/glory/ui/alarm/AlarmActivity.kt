@@ -28,6 +28,7 @@ class AlarmActivity : ComponentActivity() {
             val binder = service as AlarmService.LocalBinder
             alarmService = binder.getService()
             isBound = true
+            setContentSafely()
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -52,12 +53,11 @@ class AlarmActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppPreferences.init(this)
-
-        // Turn on the screen and show on lock screen
         turnScreenOnAndShowWhenLocked()
-
-        // To make activity edge-to-edge
         WindowCompat.setDecorFitsSystemWindows(window, false)
+    }
+
+    private fun setContentSafely() {
 
         val snoozeCount = intent.getIntExtra(
             AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY,
@@ -67,31 +67,28 @@ class AlarmActivity : ComponentActivity() {
         setContent {
             MorningGloryTheme {
                 AlarmScreen(
+                    alarmType = alarmService.alarmType,
                     onDismiss = {
-                        if (isBound) {
-                            alarmService.stopSelf()
-                        }
+                        if (isBound) alarmService.stopSelf()
                         finish()
                     },
                     snoozeCount = snoozeCount,
                     onSnooze = {
-                        if (isBound) {
-                            alarmService.snoozeAndDismissAlarm()
-                        }
+                        if (isBound) alarmService.snoozeAndDismissAlarm()
                         finish()
                     }
                 )
             }
         }
     }
-    
+
     private fun turnScreenOnAndShowWhenLocked() {
         // Set window flags to show on lock screen and keep screen on
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
             WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
         )
-        
+
         // Dismiss keyguard if needed
         val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {

@@ -32,8 +32,10 @@ class AlarmService : Service() {
 
     private lateinit var appSoundPlayer: AppSoundPlayer
     private var isRunning = false
-    private lateinit var alarmType: AlarmType
     private var snoozeCount: Int = 0
+
+    // Public so that it can be accessed from the activity
+    lateinit var alarmType: AlarmType
 
     /// Creates the service and initiate the alarm sound player
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
