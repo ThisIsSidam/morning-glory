@@ -29,7 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
-import app.morning.glory.ui.home.HomeView
+import app.morning.glory.ui.home.HomeViewType
 import app.morning.glory.ui.home.components.sheets.OptionsSheet
 import app.morning.glory.ui.home.components.sheets.QRCodeManagerSheet
 import app.morning.glory.ui.home.components.sheets.RingtoneManagerSheet
@@ -115,7 +115,7 @@ fun HomeAppBar(
             divider = {}
 
         ) {
-            HomeView.entries.forEachIndexed { index, view ->
+            HomeViewType.entries.forEachIndexed { index, view ->
 
                 val isSelected = pagerState.currentPage == index
 
@@ -138,7 +138,7 @@ fun HomeAppBar(
 fun HomeTab(
     isSelected: Boolean,
     onClick: () -> Unit,
-    view: HomeView,
+    view: HomeViewType,
 ) {
     Tab(
         selected = isSelected,
