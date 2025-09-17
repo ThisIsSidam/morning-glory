@@ -1,4 +1,4 @@
-package app.morning.glory.ui.home.components.sheets
+package app.morning.glory.ui.home.sheets
 
 import android.content.SharedPreferences
 import androidx.compose.foundation.background
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -111,7 +112,7 @@ fun SnoozeOptionTile() {
                             .background(MaterialTheme.colorScheme.surface)
                     ) {
                         (1..4).forEach { option ->
-                            androidx.compose.material3.DropdownMenuItem(
+                            DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = option.toString(),
@@ -196,7 +197,7 @@ fun SnoozeDurationTile() {
                             .background(MaterialTheme.colorScheme.surface)
                     ) {
                         listOf(5, 10, 15, 30).forEach { option ->
-                            androidx.compose.material3.DropdownMenuItem(
+                            DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = "$option min",
@@ -281,7 +282,7 @@ fun WakeCheckAlarmTimeTile() {
                             .background(MaterialTheme.colorScheme.surface)
                     ) {
                         listOf(15, 30, 60).forEach { option ->
-                            androidx.compose.material3.DropdownMenuItem(
+                            DropdownMenuItem(
                                 text = {
                                     Text(
                                         text = "$option min",

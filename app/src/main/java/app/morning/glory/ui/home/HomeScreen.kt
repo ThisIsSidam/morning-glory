@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
@@ -31,6 +30,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.morning.glory.ui.home.components.HomeAppBar
+import app.morning.glory.ui.home.viewmodels.NapView
+import app.morning.glory.ui.home.viewmodels.SleepView
 
 /// Handles notification permission requests and displays the HomeView.
 @OptIn(ExperimentalMaterial3Api::class)

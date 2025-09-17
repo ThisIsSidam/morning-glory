@@ -1,4 +1,4 @@
-package app.morning.glory.ui.home.components.sheets
+package app.morning.glory.ui.home.sheets
 
 import android.app.Activity
 import android.content.Intent

@@ -1,4 +1,4 @@
-package app.morning.glory.ui.home
+package app.morning.glory.ui.home.viewmodels
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

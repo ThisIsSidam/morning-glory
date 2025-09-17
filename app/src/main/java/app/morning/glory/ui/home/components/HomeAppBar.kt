@@ -30,9 +30,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import app.morning.glory.R
 import app.morning.glory.ui.home.HomeViewType
-import app.morning.glory.ui.home.components.sheets.OptionsSheet
-import app.morning.glory.ui.home.components.sheets.QRCodeManagerSheet
-import app.morning.glory.ui.home.components.sheets.RingtoneManagerSheet
+import app.morning.glory.ui.home.sheets.OptionsSheet
+import app.morning.glory.ui.home.sheets.QRCodeManagerSheet
+import app.morning.glory.ui.home.sheets.RingtoneManagerSheet
 import kotlinx.coroutines.launch
 
 enum class HomeSheet {
