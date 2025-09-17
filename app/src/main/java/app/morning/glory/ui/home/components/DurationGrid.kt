@@ -95,7 +95,7 @@ private fun DurationButton(
 ) {
     Box(
         modifier = modifier
-            .background(Color.LightGray, shape)
+            .background(MaterialTheme.colorScheme.primary, shape)
             .clickable { onClick(minutes) },
         contentAlignment = Alignment.Center
     ) {
