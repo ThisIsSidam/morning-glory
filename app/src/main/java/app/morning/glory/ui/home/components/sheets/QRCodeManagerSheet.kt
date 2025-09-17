@@ -1,8 +1,7 @@
 package app.morning.glory.ui.home.components.sheets
 
+import AddNewQRCode
 import android.content.SharedPreferences
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,9 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.morning.glory.core.utils.AppPreferences
-import app.morning.glory.ui.qr_scanner.ScannerActivity
-import com.journeyapps.barcodescanner.ScanContract
-import com.journeyapps.barcodescanner.ScanOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,34 +107,4 @@ fun DeleteExistingCodeButton(qrCode: String) {
         }
     }
 
-}
-
-@Composable
-fun AddNewQRCode() {
-    val barcodeLauncher = rememberLauncherForActivityResult(
-        contract = ScanContract()
-    ) { result ->
-        if (result.contents == null) {
-            Log.d("QRScannerScreen", "Scan cancelled")
-        } else {
-            AppPreferences.alarmCode =  result.contents
-        }
-    }
-
-    Button(
-        onClick = {
-            val options : ScanOptions = ScanOptions().apply {
-                setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
-                setPrompt("Scan a QR Code")
-                setCaptureActivity(ScannerActivity::class.java)
-                setBeepEnabled(true)
-            }
-            barcodeLauncher.launch(options)
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-    ) {
-        Text(text = "Scan QR Code")
-    }
 }
