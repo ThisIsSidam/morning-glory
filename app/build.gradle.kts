@@ -18,16 +18,38 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = true
+    flavorDimensions += "version"
+
+    productFlavors {
+        create("dev") {
+            dimension = "version"
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "[Dev] Morning Glory")
             signingConfig = signingConfigs.getByName("debug")
+        }
+
+        create("prod") {
+            dimension = "version"
+            resValue("string", "app_name", "Morning Glory")
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        getByName("debug") {
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
