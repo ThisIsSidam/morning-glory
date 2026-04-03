@@ -10,4 +10,7 @@
     <!-- Notification Messages -->
     <string name="alarm_notification_title">Morning Glory</string>
     <string name="alarm_notification_content">Good morning! Time to start your day!</string>
+
+    <string name="turn_on_flashlight">Turn On Flashlight</string>
+    <string name="turn_off_flashlight">Turn Off Flashlight</string>
 </resources>
