@@ -1,10 +1,11 @@
 package app.morning.glory.ui.qr_scanner
 
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import android.widget.Button
+import android.widget.ImageButton
 import app.morning.glory.R
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.journeyapps.barcodescanner.CaptureManager
@@ -14,7 +15,7 @@ class ScannerActivity : CaptureActivity(), DecoratedBarcodeView.TorchListener {
 
     private lateinit var capture: CaptureManager
     private lateinit var barcodeScannerView: DecoratedBarcodeView
-    private lateinit var switchFlashlightButton: Button
+    private lateinit var switchFlashlightButton: ImageButton
     private var isFlashlightOn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +26,10 @@ class ScannerActivity : CaptureActivity(), DecoratedBarcodeView.TorchListener {
 
         capture = CaptureManager(this, barcodeScannerView)
         capture.initializeFromIntent(intent, savedInstanceState)
+        
+        // Explicitly set the status text to override the library's default behavior
+        barcodeScannerView.setStatusText(getString(R.string.scan_qr_code_description))
+
         capture.decode()
 
         switchFlashlightButton = findViewById(R.id.switch_flashlight)
@@ -52,18 +57,27 @@ class ScannerActivity : CaptureActivity(), DecoratedBarcodeView.TorchListener {
         }
     }
 
+    /**
+     * Close the scanner activity
+     */
+    fun onCloseScanner(view: View) {
+        finish()
+    }
+
     private fun hasFlash(): Boolean {
         return applicationContext.packageManager
             .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
     }
 
     override fun onTorchOn() {
-        switchFlashlightButton.setText(R.string.turn_off_flashlight)
+        switchFlashlightButton.setBackgroundResource(R.drawable.button_bg_white_circle)
+        switchFlashlightButton.setColorFilter(Color.BLACK)
         isFlashlightOn = true
     }
 
     override fun onTorchOff() {
-        switchFlashlightButton.setText(R.string.turn_on_flashlight)
+        switchFlashlightButton.background = null
+        switchFlashlightButton.colorFilter = null
         isFlashlightOn = false
     }
 

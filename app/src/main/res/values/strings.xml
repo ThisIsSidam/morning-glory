@@ -13,4 +13,5 @@
 
     <string name="turn_on_flashlight">Turn On Flashlight</string>
     <string name="turn_off_flashlight">Turn Off Flashlight</string>
+    <string name="scan_qr_code_description">Place the QR Code inside the square for it to be scanned.</string>
 </resources>
