@@ -20,10 +20,10 @@ fun DurationPicker(
     initDuration: Int = 0,
     onDurationSelected: (Long) -> Unit
 ) {
-    require(initDuration >= 0 && initDuration < 24 * 60) { "initDuration should be >= 0 and less than 24 hours"}
+    require(initDuration >= 0 && initDuration < 24 * 60) { "initDuration should be >= 0 and less than 24 hours" }
 
-    var hourPickerState = rememberPickerState()
-    var minutePickerState = rememberPickerState()
+    val hourPickerState = rememberPickerState()
+    val minutePickerState = rememberPickerState()
 
     LaunchedEffect(hourPickerState.selectedItem, minutePickerState.selectedItem) {
         val hours = hourPickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect

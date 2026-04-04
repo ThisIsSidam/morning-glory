@@ -18,32 +18,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.shared.components.RadioButtonGroup
+import app.morning.glory.ui.home.components.ButtonSection
 import app.morning.glory.ui.home.components.DurationPicker
+import app.morning.glory.ui.home.components.SleepHeader
 import app.morning.glory.ui.home.components.TimePicker
 import java.util.Calendar
 
 @Composable
-fun HomeScreenView(
-    modifier: Modifier = Modifier,
-    headerComposable: @Composable () -> Unit,
-    durationHeadstart: Int,
-    initialTime: Calendar?,
-    buttonsComposable: @Composable (Calendar) -> Unit
+fun SleepView(
+    modifier: Modifier = Modifier
 ) {
-
     val context = LocalContext.current
+    val initialTime = AppPreferences.sleepAlarmTime
     var selectedTime by remember { mutableStateOf(initialTime ?: Calendar.getInstance()) }
-    var is24HourFormat by remember { mutableStateOf(DateFormat.is24HourFormat(context)) }
+    val is24HourFormat by remember { mutableStateOf(DateFormat.is24HourFormat(context)) }
     var showTimePicker by remember { mutableStateOf(true) }
 
     val onTimeSelected: (Calendar) -> Unit = { time ->
         selectedTime = time
     }
 
-    val onDurationSelected: (Long) -> Unit = { durationMins ->
-        selectedTime=  Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis() + durationMins
+    val onDurationSelected: (Long) -> Unit = { durationMs ->
+        selectedTime = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis() + durationMs
         }
     }
 
@@ -55,7 +54,7 @@ fun HomeScreenView(
 
         Spacer(modifier = Modifier.weight(2f))
 
-        headerComposable()
+        SleepHeader()
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -89,7 +88,7 @@ fun HomeScreenView(
                     )
                 } else {
                     DurationPicker(
-                        initDuration = durationHeadstart,
+                        initDuration = 7 * 60 + 30,
                         onDurationSelected = onDurationSelected
                     )
                 }
@@ -98,10 +97,8 @@ fun HomeScreenView(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        buttonsComposable(selectedTime)
+        ButtonSection(selectedTime)
 
         Spacer(modifier = Modifier.weight(1f))
     }
 }
-
-
