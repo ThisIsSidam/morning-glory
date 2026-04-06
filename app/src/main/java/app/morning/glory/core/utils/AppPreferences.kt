@@ -7,14 +7,18 @@ import androidx.core.content.edit
 import androidx.core.net.toUri
 import app.morning.glory.core.audio.RingtoneInfo
 import app.morning.glory.core.audio.UriTypeAdapter
+import app.morning.glory.core.extensions.getDuration
 import app.morning.glory.core.extensions.getLocalTime
 import app.morning.glory.core.extensions.getTime
+import app.morning.glory.core.extensions.putDuration
 import app.morning.glory.core.extensions.putLocalTime
 import app.morning.glory.core.extensions.putTime
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.time.LocalTime
 import java.util.Calendar
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 object AppPreferences {
     var isInitialized : Boolean = false
@@ -120,6 +124,29 @@ object AppPreferences {
         set(value) {
             prefs.edit { putBoolean(DISPLAY_NAP_DURATION_HINT_KEY, value) }
         }
+
+    // -- -- Nap Durations -- -- //
+
+    const val NAP_DURATION_1 = "nap_duration_1"
+    const val NAP_DURATION_2 = "nap_duration_2"
+    const val NAP_DURATION_3 = "nap_duration_3"
+    const val NAP_DURATION_4 = "nap_duration_4"
+
+    var napDuration1: Duration
+        get() = prefs.getDuration(NAP_DURATION_1, 15.minutes) ?: 15.minutes
+        set(value) = prefs.edit { putDuration(NAP_DURATION_1, value) }
+
+    var napDuration2: Duration
+        get() = prefs.getDuration(NAP_DURATION_2, 20.minutes) ?: 20.minutes
+        set(value) = prefs.edit { putDuration(NAP_DURATION_2, value) }
+
+    var napDuration3: Duration
+        get() = prefs.getDuration(NAP_DURATION_3, 30.minutes) ?: 30.minutes
+        set(value) = prefs.edit { putDuration(NAP_DURATION_3, value) }
+
+    var napDuration4: Duration
+        get() = prefs.getDuration(NAP_DURATION_4, 45.minutes) ?: 45.minutes
+        set(value) = prefs.edit { putDuration(NAP_DURATION_4, value) }
 
 
 
