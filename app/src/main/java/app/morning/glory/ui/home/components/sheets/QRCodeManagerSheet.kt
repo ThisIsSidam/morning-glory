@@ -3,6 +3,7 @@ package app.morning.glory.ui.home.components.sheets
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,7 @@ import com.journeyapps.barcodescanner.ScanOptions
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QRCodeManagerSheetBody() {
-    var alarmCode by remember {mutableStateOf(AppPreferences.alarmCode)}
+    var alarmCode by remember { mutableStateOf(AppPreferences.alarmCode) }
 
     DisposableEffect(Unit) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -50,14 +51,14 @@ fun QRCodeManagerSheetBody() {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
+            .animateContentSize()
             .padding(16.dp)
     ) {
         Text(
             text = "Saved QR Codes",
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 12.dp)
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             "The alarm QR code makes dismissing the alarm harder. Place it somewhere that forces you to get out of bed to scan it.",
@@ -66,15 +67,14 @@ fun QRCodeManagerSheetBody() {
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(36.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         AddNewQRCode()
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        if (alarmCode != null ) {
+        if (alarmCode != null) {
             DeleteExistingCodeButton(alarmCode!!)
-
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -117,13 +117,13 @@ fun AddNewQRCode() {
         if (result.contents == null) {
             Log.d("QRScannerScreen", "Scan cancelled")
         } else {
-            AppPreferences.alarmCode =  result.contents
+            AppPreferences.alarmCode = result.contents
         }
     }
 
     Button(
         onClick = {
-            val options : ScanOptions = ScanOptions().apply {
+            val options: ScanOptions = ScanOptions().apply {
                 setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
                 setPrompt("Scan a QR Code")
                 setCaptureActivity(ScannerActivity::class.java)

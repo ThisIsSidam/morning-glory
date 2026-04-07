@@ -1,11 +1,14 @@
 package app.morning.glory.ui.home.components.sheets
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -52,74 +55,73 @@ fun NapDurationsSheet(
         listOf(
             5.minutes, 10.minutes, 15.minutes, 20.minutes, 25.minutes, 30.minutes,
             40.minutes, 45.minutes, 50.minutes, 60.minutes, 75.minutes, 90.minutes,
-            105.minutes, 120.minutes
+            105.minutes, 120.minutes, 150.minutes, 180.minutes
         )
     }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp),
+            .padding(bottom = 16.dp)
+            .animateContentSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Edit Nap Durations",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+            text = if (selectedIndex == -1) "Edit Nap Durations" else "Select Duration",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
         )
 
-        NapDurationGrid(
-            durations = durations,
-            selectedIndex = selectedIndex,
-            onTap = { index ->
-                selectedIndex = if (selectedIndex == index) -1 else index
+        AnimatedContent(
+            targetState = selectedIndex,
+            transitionSpec = {
+                // If transitioning from/to -1, use fade animation
+                fadeIn() togetherWith fadeOut()
             },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-        )
-
-
-        if (selectedIndex != -1) {
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Select duration for Button ${selectedIndex + 1}",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 80.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.height(240.dp)
-            ) {
-                items(presetDurations) { duration ->
-                    OutlinedButton(
-                        onClick = {
-                            durations[selectedIndex] = duration
-                            selectedIndex = -1
-                        },
-                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
-                        colors = if (durations[selectedIndex] == duration) {
-                            ButtonDefaults.outlinedButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            label = "NapDurationsTransition"
+        ) { targetIndex ->
+            if (targetIndex == -1) {
+                NapDurationGrid(
+                    durations = durations,
+                    selectedIndex = targetIndex,
+                    onTap = { index ->
+                        selectedIndex = if (selectedIndex == index) -1 else index
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(24.dp))
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 80.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(presetDurations) { duration ->
+                        OutlinedButton(
+                            onClick = {
+                                durations[targetIndex] = duration
+                                selectedIndex = -1
+                            },
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+                            colors = if (durations[targetIndex] == duration) {
+                                ButtonDefaults.outlinedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            } else {
+                                ButtonDefaults.outlinedButtonColors()
+                            }
+                        ) {
+                            val text = duration.friendly()
+                            Text(
+                                text = text,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
                             )
-                        } else {
-                            ButtonDefaults.outlinedButtonColors()
                         }
-                    ) {
-                        val text = duration.friendly()
-                        Text(
-                            text = text,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium
-                        )
                     }
                 }
             }

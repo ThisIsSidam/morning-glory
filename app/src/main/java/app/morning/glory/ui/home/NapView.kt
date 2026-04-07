@@ -1,6 +1,7 @@
 package app.morning.glory.ui.home
 
 import android.content.SharedPreferences
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -100,15 +102,19 @@ fun NapView(
 
         IconButton(
             onClick = { showEditSheet = true },
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                contentColor = MaterialTheme.colorScheme.primary
+            ),
             modifier = Modifier
                 .padding(horizontal = 48.dp)
                 .align(Alignment.End)
-                .size(24.dp)
+                .size(32.dp)
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.round_edit_24),
                 contentDescription = "Edit durations",
-                tint = MaterialTheme.colorScheme.primary
+                modifier = Modifier.size(18.dp)
             )
         }
 
@@ -119,6 +125,7 @@ fun NapView(
             modifier = Modifier
                 .padding(horizontal = 48.dp)
                 .fillMaxWidth()
+                .animateContentSize()
                 .clip(RoundedCornerShape(24.dp))
         ) {
             NapDurationGrid(

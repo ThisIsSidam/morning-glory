@@ -32,8 +32,8 @@ fun SaveCloseButtons(
     ) {
         Button(
             onClick = onClose, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
             )
         ) {
             Icon(
