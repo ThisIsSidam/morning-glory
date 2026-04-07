@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import app.morning.glory.core.extensions.friendly
 import app.morning.glory.core.extensions.toLocalTime
 import app.morning.glory.core.extensions.truncateToSeconds
 import app.morning.glory.core.receivers.WakeCheckAlarmReceiver
@@ -30,8 +31,8 @@ enum class AlarmType(val requestCode: Int) {
 
 object AppAlarmManager {
 
-    const val ALARM_TYPE_EXTRA_KEY : String = "alarm-type"
-    const val SNOOZE_COUNT_EXTRA_KEY : String = "snooze_count"
+    const val ALARM_TYPE_EXTRA_KEY: String = "alarm-type"
+    const val SNOOZE_COUNT_EXTRA_KEY: String = "snooze_count"
     private const val WAKE_CHECK_ALARM_REQUEST_CODE = 2345
 
     /**
@@ -40,10 +41,10 @@ object AppAlarmManager {
      */
     fun getAlarmPendingIntent(
         context: Context, type: AlarmType, snoozeCount: Int = 0
-    ) : PendingIntent {
+    ): PendingIntent {
         val intent = Intent(context, AlarmService::class.java).apply {
             action = CustomActions.alarmTriggered(context)
-            putExtra(ALARM_TYPE_EXTRA_KEY, type.toString())
+            putExtra(ALARM_TYPE_EXTRA_KEY, type.name)
             putExtra(SNOOZE_COUNT_EXTRA_KEY, snoozeCount)
         }
 
@@ -57,7 +58,7 @@ object AppAlarmManager {
         )
     }
 
-    fun getWakeCheckAlarmPendingIntent(context: Context) : PendingIntent {
+    fun getWakeCheckAlarmPendingIntent(context: Context): PendingIntent {
         val intent = Intent(context, WakeCheckAlarmReceiver::class.java)
         return PendingIntent.getBroadcast(
             context,
@@ -81,7 +82,7 @@ object AppAlarmManager {
         scheduleAlarm(context, time, AlarmType.SLEEP)
     }
 
-    fun scheduleAlarm(context: Context, time: Calendar, type: AlarmType, ) {
+    fun scheduleAlarm(context: Context, time: Calendar, type: AlarmType) {
         val truncatedTime = time.truncateToSeconds()
         type.updatePrefs(truncatedTime)
 
@@ -92,6 +93,7 @@ object AppAlarmManager {
             truncatedTime.timeInMillis,
             getAlarmPendingIntent(context, type)
         )
+        println("Scheduled Alarm for ${truncatedTime.friendly(context)}")
 
         // 30 Minutes before main alarm time, pre-alarm notification will be shown
         // Only for sleep alarms
@@ -105,7 +107,7 @@ object AppAlarmManager {
         }
     }
 
-    fun snoozeAlarm(context: Context, time: Calendar, type: AlarmType, snoozeCount: Int ) {
+    fun snoozeAlarm(context: Context, time: Calendar, type: AlarmType, snoozeCount: Int) {
         val truncatedTime = time.truncateToSeconds()
         type.updatePrefs(truncatedTime)
 

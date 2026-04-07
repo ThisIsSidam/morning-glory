@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.morning.glory.R
 import app.morning.glory.core.extensions.toast
+import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.ui.qr_scanner.ScannerActivity
 import com.journeyapps.barcodescanner.ScanContract
@@ -51,6 +52,7 @@ import java.util.Locale
 
 @Composable
 fun AlarmScreen(
+    alarmType: AlarmType,
     onDismiss: () -> Unit = {},
     onSnooze: () -> Unit,
     snoozeCount: Int
@@ -103,7 +105,7 @@ fun AlarmScreen(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (alarmCode != null) {
+                if (alarmCode != null && alarmType == AlarmType.SLEEP) {
                     ScanQRButton(alarmCode!!, onDismiss)
                 } else {
                     Button(
@@ -111,7 +113,7 @@ fun AlarmScreen(
                         modifier = Modifier
                             .height(56.dp)
                     ) {
-                        Icon (
+                        Icon(
                             painter = painterResource(id = R.drawable.round_cancel_24),
                             contentDescription = "Dismiss alarm icon",
                             modifier = Modifier.padding(bottom = 4.dp)
@@ -127,7 +129,7 @@ fun AlarmScreen(
                         modifier = Modifier
                             .height(56.dp)
                     ) {
-                        Icon (
+                        Icon(
                             painter = painterResource(id = R.drawable.outline_snooze_24),
                             contentDescription = "Snooze alarm icon",
                             modifier = Modifier.padding(bottom = 4.dp)
@@ -142,7 +144,7 @@ fun AlarmScreen(
 }
 
 @Composable
-fun ScanQRButton(alarmCode : String, onDismiss: () -> Unit) {
+fun ScanQRButton(alarmCode: String, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val barcodeLauncher = rememberLauncherForActivityResult(
         contract = ScanContract()
@@ -161,7 +163,7 @@ fun ScanQRButton(alarmCode : String, onDismiss: () -> Unit) {
 
     Button(
         onClick = {
-            val options : ScanOptions = ScanOptions().apply {
+            val options: ScanOptions = ScanOptions().apply {
                 setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
                 setPrompt("Scan a QR Code")
                 setCaptureActivity(ScannerActivity::class.java)
@@ -172,7 +174,7 @@ fun ScanQRButton(alarmCode : String, onDismiss: () -> Unit) {
         modifier = Modifier
             .height(56.dp)
     ) {
-        Icon (
+        Icon(
             painter = painterResource(id = R.drawable.outline_qr_code_2_24),
             contentDescription = "QR Code Icon",
             modifier = Modifier.padding(bottom = 4.dp)

@@ -27,7 +27,7 @@ class AlarmService : Service() {
 
     private val localBinder = LocalBinder()
 
-    override fun onBind(intent: Intent?): IBinder? = localBinder
+    override fun onBind(intent: Intent?): IBinder = localBinder
 
     private lateinit var appSoundPlayer: AppSoundPlayer
     private var isRunning = false
@@ -91,6 +91,7 @@ class AlarmService : Service() {
                 AppPreferences.sleepAlarmTime = null
                 manageReschedule()
             }
+
             AlarmType.NAP -> AppPreferences.napAlarmTime = null
         }
 
@@ -102,7 +103,7 @@ class AlarmService : Service() {
     }
 
     /// Check for daily time presence and set new alarm
-    private fun manageReschedule()  {
+    private fun manageReschedule() {
         val dailyAlarm = AppPreferences.dailyAlarm
         if (dailyAlarm != null) {
             val scheduleTime = Calendar.getInstance().applyLocalTime(dailyAlarm)
@@ -126,7 +127,7 @@ class AlarmService : Service() {
 
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, AppPreferences.snoozeDurationMinutes)
-        AppAlarmManager.snoozeAlarm(applicationContext, time, AlarmType.SLEEP, snoozeCount+1)
+        AppAlarmManager.snoozeAlarm(applicationContext, time, AlarmType.SLEEP, snoozeCount + 1)
 
         // Stop foreground and then service
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -138,9 +139,9 @@ class AlarmService : Service() {
     private fun createNotification(): Notification {
 
         // Intent to open the AlarmActivity when the notification is clicked
-        val fullScreenIntent = Intent(this, AlarmActivity::class.java).putExtra(
-            AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, snoozeCount
-        )
+        val fullScreenIntent = Intent(this, AlarmActivity::class.java)
+            .putExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY, alarmType.name)
+            .putExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, snoozeCount)
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this,
             0,
