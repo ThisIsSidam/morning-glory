@@ -170,7 +170,7 @@ fun NapCancelButton(modifier: Modifier) {
             AppAlarmManager.cancelAlarm(context, AlarmType.NAP)
             context.toast("Cancelled Alarm")
         },
-        modifier = modifier.height(80.dp),
+        modifier = modifier.height(60.dp),
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.errorContainer,

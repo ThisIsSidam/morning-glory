@@ -2,12 +2,13 @@ package app.morning.glory.core.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
+import android.text.format.DateUtils
 import java.time.LocalTime
 import java.util.Calendar
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-fun Calendar.toLocalTime() : LocalTime {
+fun Calendar.toLocalTime(): LocalTime {
     return LocalTime.of(
         get(Calendar.HOUR_OF_DAY),
         get(Calendar.MINUTE),
@@ -37,15 +38,15 @@ fun Calendar.truncateToSeconds(): Calendar {
     return newTime
 }
 
-fun Calendar.difference(other: Calendar) : Duration {
+fun Calendar.difference(other: Calendar): Duration {
     val millisInt = other.timeInMillis - timeInMillis
     return millisInt.milliseconds
 }
 
-fun Calendar.formattedDuration(other : Calendar = Calendar.getInstance()) : String {
+fun Calendar.formattedDuration(other: Calendar = Calendar.getInstance()): String {
     val dur = other.difference(this)
 
-    return dur.toComponents { hours, minutes, seconds, nanoseconds ->
+    dur.toComponents { hours, minutes, _, _ ->
         if (hours == 0L) {
             return "$minutes Min"
         }
@@ -53,7 +54,7 @@ fun Calendar.formattedDuration(other : Calendar = Calendar.getInstance()) : Stri
     }
 }
 
-fun Calendar.isInPast() : Boolean {
+fun Calendar.isInPast(): Boolean {
     return this.before(Calendar.getInstance())
 }
 
@@ -87,8 +88,8 @@ fun Calendar.friendly(context: Context): String {
         else -> {
             // This format flag shows the date and year, respecting locale.
             // e.g., "December 31, 2025" or "31 December 2025"
-            val flags = android.text.format.DateUtils.FORMAT_SHOW_DATE or android.text.format.DateUtils.FORMAT_SHOW_YEAR
-            android.text.format.DateUtils.formatDateTime(context, this.timeInMillis, flags)
+            val flags = DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR
+            DateUtils.formatDateTime(context, this.timeInMillis, flags)
         }
     }
 

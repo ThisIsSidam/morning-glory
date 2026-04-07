@@ -106,12 +106,13 @@ fun AlarmScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 if (alarmCode != null && alarmType == AlarmType.SLEEP) {
-                    ScanQRButton(alarmCode!!, onDismiss)
+                    ScanQRButton(alarmCode!!, Modifier.weight(1f), onDismiss)
                 } else {
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier
                             .height(56.dp)
+                            .weight(1f)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.round_cancel_24),
@@ -128,6 +129,7 @@ fun AlarmScreen(
                         onClick = onSnooze,
                         modifier = Modifier
                             .height(56.dp)
+                            .weight(1f)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.outline_snooze_24),
@@ -144,7 +146,7 @@ fun AlarmScreen(
 }
 
 @Composable
-fun ScanQRButton(alarmCode: String, onDismiss: () -> Unit) {
+fun ScanQRButton(alarmCode: String, modifier: Modifier = Modifier, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val barcodeLauncher = rememberLauncherForActivityResult(
         contract = ScanContract()
@@ -171,7 +173,7 @@ fun ScanQRButton(alarmCode: String, onDismiss: () -> Unit) {
             }
             barcodeLauncher.launch(options)
         },
-        modifier = Modifier
+        modifier = modifier
             .height(56.dp)
     ) {
         Icon(

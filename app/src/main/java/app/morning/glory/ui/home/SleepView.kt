@@ -1,6 +1,13 @@
 package app.morning.glory.ui.home
 
 import android.text.format.DateFormat
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,17 +87,29 @@ fun SleepView(
             Box(
                 contentAlignment = Alignment.Center
             ) {
-                if (showTimePicker) {
-                    TimePicker(
-                        initialTime = selectedTime,
-                        is24HourFormat = is24HourFormat,
-                        onTimeSelected = onTimeSelected
-                    )
-                } else {
-                    DurationPicker(
-                        initDuration = 7 * 60 + 30,
-                        onDurationSelected = onDurationSelected
-                    )
+                AnimatedContent(
+                    targetState = showTimePicker,
+                    transitionSpec = {
+                        (slideInHorizontally { width -> width } + fadeIn())
+                            .togetherWith(slideOutHorizontally { width -> width } + fadeOut())
+                            .using(
+                                SizeTransform(clip = false)
+                            )
+                    },
+                    label = "PickerAnimation"
+                ) { isTimePicker ->
+                    if (isTimePicker) {
+                        TimePicker(
+                            initialTime = selectedTime,
+                            is24HourFormat = is24HourFormat,
+                            onTimeSelected = onTimeSelected
+                        )
+                    } else {
+                        DurationPicker(
+                            initDuration = 7 * 60 + 30,
+                            onDurationSelected = onDurationSelected
+                        )
+                    }
                 }
             }
         }

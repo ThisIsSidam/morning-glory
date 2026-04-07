@@ -1,11 +1,18 @@
 package app.morning.glory.ui.home.components
 
 import android.content.SharedPreferences
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -14,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.morning.glory.core.extensions.friendly
@@ -36,8 +44,8 @@ fun ButtonSection(time: Calendar) {
 
     val context = LocalContext.current
     var showSheet by remember { mutableStateOf(ShowSheet.NONE) }
-    var setAlarmTime by remember {mutableStateOf(AppPreferences.sleepAlarmTime) }
-    var dailyAlarm by remember {mutableStateOf(AppPreferences.dailyAlarm)}
+    var setAlarmTime by remember { mutableStateOf(AppPreferences.sleepAlarmTime) }
+    var dailyAlarm by remember { mutableStateOf(AppPreferences.dailyAlarm) }
 
     DisposableEffect(Unit) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -80,26 +88,46 @@ fun ButtonSection(time: Calendar) {
         )
     }
 
-    Row {
-        if (setAlarmTime != null)
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 16.dp)
+            .animateContentSize()
+    ) {
+        if (setAlarmTime != null) {
             Button(
                 onClick = {
                     showSheet = ShowSheet.CANCEL
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                ),
                 modifier = Modifier
-                    .padding(horizontal = 32.dp, vertical = 16.dp)
+                    .weight(1f)
+                    .height(60.dp)
+                    .clip(RoundedCornerShape(24.dp)),
+                shape = RoundedCornerShape(24.dp)
             ) {
                 Text("Cancel")
             }
 
-        Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
+        }
 
         Button(
             onClick = {
                 showSheet = ShowSheet.UPDATE
             },
             modifier = Modifier
-                .padding(horizontal = 32.dp, vertical = 16.dp)
+                .height(60.dp)
+                .then(
+                    if (setAlarmTime != null) Modifier.weight(1f)
+                    else Modifier.width(180.dp)
+                )
+                .clip(RoundedCornerShape(24.dp)),
+            shape = RoundedCornerShape(24.dp)
         ) {
             Text(if (setAlarmTime != null) "Update" else "Set Alarm")
         }
