@@ -169,7 +169,7 @@ fun ScanQRButton(alarmCode: String, modifier: Modifier = Modifier, onDismiss: ()
                 setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
                 setPrompt("Scan a QR Code")
                 setCaptureActivity(ScannerActivity::class.java)
-                setBeepEnabled(true)
+                setBeepEnabled(false)
             }
             barcodeLauncher.launch(options)
         },

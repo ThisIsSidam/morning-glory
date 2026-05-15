@@ -2,11 +2,14 @@ package app.morning.glory.ui.qr_scanner
 
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageButton
 import app.morning.glory.R
+import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.CaptureActivity
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
@@ -24,9 +27,19 @@ class ScannerActivity : CaptureActivity(), DecoratedBarcodeView.TorchListener {
         barcodeScannerView = initializeContent()
         barcodeScannerView.setTorchListener(this)
 
-        capture = CaptureManager(this, barcodeScannerView)
+        capture = object : CaptureManager(this, barcodeScannerView) {
+            override fun returnResult(result: BarcodeResult) {
+                window.decorView.performHapticFeedback(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                        HapticFeedbackConstants.CONFIRM
+                    else HapticFeedbackConstants.VIRTUAL_KEY
+                )
+                super.returnResult(result)
+            }
+        }
+
         capture.initializeFromIntent(intent, savedInstanceState)
-        
+
         // Explicitly set the status text to override the library's default behavior
         barcodeScannerView.setStatusText(getString(R.string.scan_qr_code_description))
 
