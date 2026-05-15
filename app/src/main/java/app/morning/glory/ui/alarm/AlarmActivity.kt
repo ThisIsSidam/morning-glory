@@ -64,7 +64,7 @@ class AlarmActivity : ComponentActivity() {
 
         val snoozeCount = intent.getIntExtra(
             AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY,
-            AppPreferences.DEFAULT_MAX_SNOOZE_COUNT
+            0
         )
 
         setContent {

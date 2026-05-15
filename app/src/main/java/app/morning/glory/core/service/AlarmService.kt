@@ -122,7 +122,7 @@ class AlarmService : Service() {
     }
 
     /**
-     * Snooze the alarm for 10 minutes and dismiss it.
+     * Snooze the alarm and dismiss it.
      */
     fun snoozeAndDismissAlarm() {
         if (!isRunning) return
@@ -132,7 +132,7 @@ class AlarmService : Service() {
 
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, AppPreferences.snoozeDurationMinutes)
-        AppAlarmManager.snoozeAlarm(applicationContext, time, AlarmType.SLEEP, snoozeCount + 1)
+        AppAlarmManager.snoozeAlarm(applicationContext, time, alarmType, snoozeCount + 1)
 
         // Stop foreground and then service
         stopForeground(STOP_FOREGROUND_REMOVE)
