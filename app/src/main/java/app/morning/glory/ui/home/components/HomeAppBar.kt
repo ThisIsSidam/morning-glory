@@ -94,7 +94,7 @@ fun HomeAppBar(
                 }
 
                 IconButton(
-                    onClick = { showHomeSheet = HomeSheet.OptionsSheet}
+                    onClick = { showHomeSheet = HomeSheet.OptionsSheet }
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.round_tune_24),
@@ -112,8 +112,8 @@ fun HomeAppBar(
             selectedTabIndex = pagerState.currentPage,
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onPrimary,
-            divider = {}
-
+            divider = {},
+            modifier = Modifier.padding(8.dp)
         ) {
             HomeView.entries.forEachIndexed { index, view ->
 
