@@ -7,6 +7,7 @@ import android.content.Intent
 import app.morning.glory.core.extensions.friendly
 import app.morning.glory.core.extensions.toLocalTime
 import app.morning.glory.core.extensions.truncateToSeconds
+import app.morning.glory.core.notifications.AppNotificationManager
 import app.morning.glory.core.receivers.WakeCheckAlarmReceiver
 import app.morning.glory.core.service.AlarmService
 import java.util.Calendar
@@ -129,5 +130,15 @@ object AppAlarmManager {
 
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
+
+        if (type == AlarmType.SLEEP) {
+            val wakeCheckPendingIntent = getWakeCheckAlarmPendingIntent(context)
+            alarmManager.cancel(wakeCheckPendingIntent)
+            wakeCheckPendingIntent.cancel()
+
+            // Also clear the notification if it's already showing
+            AppNotificationManager.getNotificationManager(context)
+                .cancel(WakeCheckAlarmReceiver.WAKE_CHECK_ALARM_CODE)
+        }
     }
 }

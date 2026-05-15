@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import app.morning.glory.core.audio.AppSoundPlayer
 import app.morning.glory.core.extensions.applyLocalTime
 import app.morning.glory.core.notifications.AppNotificationManager
+import app.morning.glory.core.receivers.WakeCheckAlarmReceiver
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
 import app.morning.glory.core.utils.AppPreferences
@@ -63,6 +64,10 @@ class AlarmService : Service() {
 
             // Start in foreground with a notification
             startForeground(111, createNotification())
+
+            // Cancel any pre-alarm notifications
+            AppNotificationManager.getNotificationManager(applicationContext)
+                .cancel(WakeCheckAlarmReceiver.WAKE_CHECK_ALARM_CODE)
 
             // Start playing the alarm sound
             appSoundPlayer.playAlarm()
