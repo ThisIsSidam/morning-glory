@@ -10,7 +10,7 @@ import app.morning.glory.R
 
 object AppNotificationManager {
 
-    fun getNotificationManager(context: Context) : NotificationManager {
+    fun getNotificationManager(context: Context): NotificationManager {
         return ContextCompat.getSystemService(context, NotificationManager::class.java)!!
     }
 
@@ -20,11 +20,11 @@ object AppNotificationManager {
         actionText: String,
         actionIcon: Int,
         contentText: String,
-    ) : Notification {
+    ): Notification {
         val contentTitle = context.getString(R.string.alarm_notification_title)
 
         return NotificationCompat.Builder(context, NotificationChannelType.ALARMS.id)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -36,16 +36,15 @@ object AppNotificationManager {
     }
 
 
-
     fun createAlarmNotification(
         context: Context,
         fullScreenPendingIntent: PendingIntent
     ): Notification {
         val contentTitle = context.getString(R.string.alarm_notification_title)
         val contentText = context.getString(R.string.alarm_notification_content)
-        
+
         return NotificationCompat.Builder(context, NotificationChannelType.ALARMS.id)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
