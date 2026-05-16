@@ -6,15 +6,21 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!-- Posting alarm notifications with full-screen intents at exact scheduled times. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- To handle rescheduling upon restart -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Scan QR codes -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Alarm sound playback. Type mentioned in service tag. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:allowBackup="true"
@@ -39,31 +45,33 @@
 
         <activity
             android:name=".ui.alarm.AlarmActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTop"
-            android:excludeFromRecents="true"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
-            android:turnScreenOn="true"/>
+            android:turnScreenOn="true" />
 
-        <activity android:name=".ui.qr_scanner.ScannerActivity"
-            android:theme="@style/zxing_CaptureTheme"
+        <activity
+            android:name=".ui.qr_scanner.ScannerActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTop"
-            android:excludeFromRecents="true"
             android:noHistory="true"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
-            android:turnScreenOn="true"/>
+            android:theme="@style/zxing_CaptureTheme"
+            android:turnScreenOn="true" />
 
         <service
             android:name=".core.service.AlarmService"
+            android:directBootAware="true"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback"
-            android:directBootAware="true" />
+            android:foregroundServiceType="mediaPlayback" />
 
-        <receiver android:name=".core.receivers.BootReceiver"
+        <receiver
+            android:name=".core.receivers.BootReceiver"
             android:directBootAware="true"
             android:enabled="true"
             android:exported="false">
@@ -72,13 +80,15 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".core.receivers.WakeCheckAlarmReceiver"
+        <receiver
+            android:name=".core.receivers.WakeCheckAlarmReceiver"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
-        <receiver android:name=".core.receivers.StopAlarmReceiver"
+        <receiver
+            android:name=".core.receivers.StopAlarmReceiver"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
     </application>
 
