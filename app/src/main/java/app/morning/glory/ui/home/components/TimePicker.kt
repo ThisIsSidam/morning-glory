@@ -28,23 +28,28 @@ fun TimePicker(
     is24HourFormat: Boolean,
     onTimeSelected: (Calendar) -> Unit
 ) {
-    var time by remember { mutableStateOf(initialTime) }
-    var isAm by remember { mutableStateOf(time.get(Calendar.AM_PM) == Calendar.AM) }
-    var hourPickerState = rememberPickerState()
-    var minutePickerState = rememberPickerState()
+    var isAm by remember { mutableStateOf(initialTime.get(Calendar.AM_PM) == Calendar.AM) }
+    val hourPickerState = rememberPickerState()
+    val minutePickerState = rememberPickerState()
 
-    LaunchedEffect(hourPickerState.selectedItem, minutePickerState.selectedItem, isAm) {
+    LaunchedEffect(hourPickerState.selectedItem, minutePickerState.selectedItem, isAm, is24HourFormat) {
         val hour = hourPickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
         val minute = minutePickerState.selectedItem.toIntOrNull() ?: return@LaunchedEffect
 
-        val time = Calendar.getInstance().apply {
-            set(Calendar.HOUR, hour)
+        val newTime = Calendar.getInstance().apply {
+            if (is24HourFormat) {
+                set(Calendar.HOUR_OF_DAY, hour)
+            } else {
+                set(Calendar.HOUR, if (hour == 12) 0 else hour)
+                set(Calendar.AM_PM, if (isAm) Calendar.AM else Calendar.PM)
+            }
             set(Calendar.MINUTE, minute)
-            set(Calendar.AM_PM, if (isAm) Calendar.AM else Calendar.PM)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
 
-        if (time.isInPast()) time.add(Calendar.HOUR_OF_DAY, 24)
-        onTimeSelected(time)
+        if (newTime.isInPast()) newTime.add(Calendar.HOUR_OF_DAY, 24)
+        onTimeSelected(newTime)
     }
 
     Row(
@@ -53,10 +58,12 @@ fun TimePicker(
     ) {
         // Hours
         Picker(
-            items = if (is24HourFormat) List(24) { it.toString() } else List(12) { it.toString() },
-            startIndex = if (is24HourFormat) time.get(Calendar.HOUR_OF_DAY)
-            else time.get(Calendar.HOUR).let { if (it == 0) 12 else it },
-
+            items = if (is24HourFormat) List(24) { it.toString() } else List(12) { (it + 1).toString() },
+            startIndex = if (is24HourFormat) {
+                initialTime.get(Calendar.HOUR_OF_DAY)
+            } else {
+                initialTime.get(Calendar.HOUR).let { if (it == 0) 11 else it - 1 }
+            },
             visibleItemsCount = 7,
             state = hourPickerState
         )
@@ -69,8 +76,8 @@ fun TimePicker(
 
         // Minutes
         Picker(
-            items = List(60) { it.toString() },
-            startIndex = time.get(Calendar.MINUTE),
+            items = List(60) { it.toString().padStart(2, '0') },
+            startIndex = initialTime.get(Calendar.MINUTE),
             visibleItemsCount = 7,
             state = minutePickerState
         )
@@ -85,7 +92,6 @@ fun TimePicker(
                     isAm = option.trim() == "AM"
                 }
             )
-
         }
     }
 }
