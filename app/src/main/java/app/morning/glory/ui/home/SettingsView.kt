@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,8 +26,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import app.morning.glory.R
+import app.morning.glory.core.extensions.isIgnoringBatteryOptimizations
+import app.morning.glory.core.extensions.requestIgnoreBatteryOptimizations
+import app.morning.glory.core.extensions.toast
 import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.ui.home.components.sheets.OptionsTile
 import app.morning.glory.ui.home.components.sheets.QRCodeManagerSheetBody
@@ -41,6 +49,8 @@ enum class SettingsSheet {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsView() {
+    val context = LocalContext.current
+    val isInitiallyUnrestricted = remember { context.isIgnoringBatteryOptimizations() }
     var showSettingsSheet by remember { mutableStateOf(SettingsSheet.NONE) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -64,6 +74,13 @@ fun SettingsView() {
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
+
+        // Battery tile is at top when attention is required..
+        // If not, it is placed in the bottom.
+        if (!isInitiallyUnrestricted) {
+            BatteryOptimizationTile()
+        }
+
         OptionsTile(
             title = "QR Code",
             description = "Manage QR codes for dismissing alarms",
@@ -79,7 +96,44 @@ fun SettingsView() {
         SnoozeOptionTile()
         SnoozeDurationTile()
         WakeCheckAlarmTimeTile()
+
+        if (isInitiallyUnrestricted) {
+            BatteryOptimizationTile()
+        }
     }
+}
+
+@Composable
+fun BatteryOptimizationTile() {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var isIgnoringBatteryOptimizations by remember { mutableStateOf(context.isIgnoringBatteryOptimizations()) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                isIgnoringBatteryOptimizations = context.isIgnoringBatteryOptimizations()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    OptionsTile(
+        title = "Battery Optimization",
+        description = "Recommended for reliable alarm triggering",
+        valueText = if (isIgnoringBatteryOptimizations) "Unrestricted" else "Allow",
+        icon = Icons.Default.Info,
+        onClick = {
+            if (!isIgnoringBatteryOptimizations) {
+                context.requestIgnoreBatteryOptimizations()
+            } else {
+                context.toast("No Action Needed")
+            }
+        }
+    )
 }
 
 @Composable

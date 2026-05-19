@@ -2,6 +2,7 @@ package app.morning.glory.ui.home.components.sheets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -39,6 +41,7 @@ fun OptionsTile(
             .clickable(onClick = onClick)
     ) {
         ListItem(
+            modifier = Modifier.clip(RoundedCornerShape(16.dp)),
             colors = ListItemDefaults.colors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 headlineColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -62,10 +65,14 @@ fun OptionsTile(
                 }
             } else null,
             headlineContent = {
-                Column {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     if (description.isNotEmpty()) {
                         Text(
