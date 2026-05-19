@@ -70,7 +70,7 @@ class AlarmService : Service() {
                 .cancel(WakeCheckAlarmReceiver.WAKE_CHECK_ALARM_CODE)
 
             // Start playing the alarm sound
-            appSoundPlayer.playAlarm()
+            playAlarmSound()
 
             isRunning = true
         }
@@ -81,6 +81,19 @@ class AlarmService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         dismissAlarm()
+    }
+
+    /// If randomize is on, we pick a random ringtone and play
+    /// If not, use the selected ringtone
+    private fun playAlarmSound() {
+        val ringtoneUri = if (AppPreferences.randomizeRingtones) {
+            val list = AppPreferences.getRingtoneList()
+            val allRingtones = list.map { it.uri } + AppSoundPlayer.getDefaultRingtoneUri(this)
+            allRingtones.random()
+        } else {
+            AppPreferences.selectedRingtone ?: AppSoundPlayer.getDefaultRingtoneUri(this)
+        }
+        appSoundPlayer.playAlarm(ringtoneUri)
     }
 
     /// If running, stop the alarm sound and remove the foreground notification,

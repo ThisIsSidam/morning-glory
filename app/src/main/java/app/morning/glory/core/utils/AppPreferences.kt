@@ -21,7 +21,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 object AppPreferences {
-    var isInitialized : Boolean = false
+    var isInitialized: Boolean = false
     private lateinit var prefs: SharedPreferences
     private lateinit var gson: Gson
 
@@ -45,7 +45,6 @@ object AppPreferences {
     }
 
 
-
     /**
      * The QR Code value used for locking dismiss
      */
@@ -55,7 +54,6 @@ object AppPreferences {
         set(value) {
             prefs.edit { putString(ALARM_CODE_KEY, value) }
         }
-
 
 
     /**
@@ -89,7 +87,6 @@ object AppPreferences {
         }
 
 
-
     /**
      * The key for saving nap alarm time
      */
@@ -107,19 +104,18 @@ object AppPreferences {
         }
 
 
-
     // The key, getter and setter for displaying time or duration of the upcoming alarm
 
     const val DISPLAY_SLEEP_DURATION_HINT_KEY = "sleep_time_hint"
     const val DISPLAY_NAP_DURATION_HINT_KEY = "nap_time_hint"
 
-    var displaySleepDuration : Boolean
+    var displaySleepDuration: Boolean
         get() = prefs.getBoolean(DISPLAY_SLEEP_DURATION_HINT_KEY, false)
         set(value) {
             prefs.edit { putBoolean(DISPLAY_SLEEP_DURATION_HINT_KEY, value) }
         }
 
-    var displayNapDuration : Boolean
+    var displayNapDuration: Boolean
         get() = prefs.getBoolean(DISPLAY_NAP_DURATION_HINT_KEY, false)
         set(value) {
             prefs.edit { putBoolean(DISPLAY_NAP_DURATION_HINT_KEY, value) }
@@ -149,7 +145,6 @@ object AppPreferences {
         set(value) = prefs.edit { putDuration(NAP_DURATION_4, value) }
 
 
-
     // -- -- Ringtone preferences -- -- //
 
     // List of saved ringtones
@@ -159,7 +154,10 @@ object AppPreferences {
     fun getRingtoneList(): List<RingtoneInfo> {
         val json = prefs.getString(RINGTONE_LIST_KEY, null) ?: return emptyList()
         return try {
-            val type = com.google.gson.reflect.TypeToken.getParameterized(List::class.java, RingtoneInfo::class.java).type
+            val type = com.google.gson.reflect.TypeToken.getParameterized(
+                List::class.java,
+                RingtoneInfo::class.java
+            ).type
             gson.fromJson<List<RingtoneInfo>>(json, type) ?: emptyList()
         } catch (_: Exception) {
             emptyList()
@@ -187,13 +185,19 @@ object AppPreferences {
 
     // Selected ringtone URI
     const val SELECTED_RINGTONE_KEY = "selected_ringtone"
-
     var selectedRingtone: Uri?
         get() = prefs.getString(SELECTED_RINGTONE_KEY, null)?.toUri()
         set(value) {
             prefs.edit { putString(SELECTED_RINGTONE_KEY, value?.toString()) }
         }
 
+    // Is ringtone randomization enabled
+    const val RANDOMIZE_RINGTONES_KEY = "randomize_ringtones"
+    var randomizeRingtones: Boolean
+        get() = prefs.getBoolean(RANDOMIZE_RINGTONES_KEY, false)
+        set(value) {
+            prefs.edit { putBoolean(RANDOMIZE_RINGTONES_KEY, value) }
+        }
 
 
     // User customizable options
@@ -206,7 +210,6 @@ object AppPreferences {
         set(value) {
             prefs.edit { putInt(MAX_SNOOZE_COUNT_KEY, value) }
         }
-
 
 
     const val SNOOZE_DURATION_KEY = "snooze_duration"
@@ -226,6 +229,7 @@ object AppPreferences {
 
     const val WAKE_CHECK_ALARM_TIME_KEY = "pre_alarm_notification_time"
     const val DEFAULT_PRE_ALARM_NOTIFICATION_TIME = 30 // in minutes
+
     /**
      * The time before the alarm when the pre-alarm notification will be shown
      * Default is 30 minutes earlier

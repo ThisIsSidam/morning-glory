@@ -17,8 +17,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -53,6 +56,7 @@ fun RingtoneManagerSheetBody() {
     val selectedRingtone =
         remember { mutableStateOf<Uri>(AppPreferences.selectedRingtone ?: defInfo.uri) }
     var playingUri by remember { mutableStateOf<Uri?>(null) }
+    var randomizeOn by remember { mutableStateOf(AppPreferences.randomizeRingtones) }
 
     val ringtonePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -86,6 +90,8 @@ fun RingtoneManagerSheetBody() {
                 savedRingtones.addAll(AppPreferences.getRingtoneList())
             } else if (key == AppPreferences.SELECTED_RINGTONE_KEY) {
                 selectedRingtone.value = AppPreferences.selectedRingtone ?: defInfo.uri
+            } else if (key == AppPreferences.RANDOMIZE_RINGTONES_KEY) {
+                randomizeOn = AppPreferences.randomizeRingtones
             }
         }
 
@@ -115,6 +121,7 @@ fun RingtoneManagerSheetBody() {
                     ringtoneInfo = defInfo,
                     isPlaying = playingUri == defInfo.uri,
                     isSelected = selectedRingtone.value == defInfo.uri,
+                    isRandomizeOn = randomizeOn,
                     trailingAction = {
                         if (playingUri == defInfo.uri) {
                             player.stop()
@@ -140,6 +147,7 @@ fun RingtoneManagerSheetBody() {
                         ringtoneInfo = ringtoneInfo,
                         isPlaying = playingUri == ringtoneInfo.uri,
                         isSelected = selectedRingtone.value == ringtoneInfo.uri,
+                        isRandomizeOn = randomizeOn,
                         trailingAction = {
                             if (playingUri == ringtoneInfo.uri) {
                                 player.stop()
@@ -167,6 +175,21 @@ fun RingtoneManagerSheetBody() {
             }) {
             Text(modifier = Modifier.padding(vertical = 4.dp), text = "Add Ringtone")
         }
+
+        OptionsTile(
+            title = "Randomize Ringtones",
+            description = "Play a random sound from the list above for each alarm",
+            icon = Icons.Default.Shuffle,
+            onClick = { AppPreferences.randomizeRingtones = !randomizeOn },
+            trailingContent = {
+                Switch(
+                    checked = randomizeOn,
+                    onCheckedChange = { AppPreferences.randomizeRingtones = it }
+                )
+            },
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
         if (savedRingtones.isNotEmpty()) {
             Spacer(modifier = Modifier.padding(top = 8.dp))
             Text(

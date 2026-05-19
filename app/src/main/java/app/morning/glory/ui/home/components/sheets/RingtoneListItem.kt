@@ -20,29 +20,31 @@ fun RingtoneListItem(
     ringtoneInfo: RingtoneInfo,
     isPlaying: Boolean,
     isSelected: Boolean,
+    isRandomizeOn: Boolean,
     trailingAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val active = isSelected || isRandomizeOn
     ListItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable {
-                if (!isSelected) {
+                if (!active) {
                     AppPreferences.selectedRingtone = ringtoneInfo.uri
                 }
             },
         colors = ListItemDefaults.colors(
-            containerColor = if (isSelected) {
+            containerColor = if (active) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             },
-            headlineColor = if (isSelected) {
+            headlineColor = if (active) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             },
-            supportingColor = if (isSelected) {
+            supportingColor = if (active) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
@@ -56,7 +58,11 @@ fun RingtoneListItem(
         },
         supportingContent = {
             Text(
-                text = if (isSelected) "Active ringtone" else "Tap to select",
+                text = when {
+                    isRandomizeOn -> "Can be played randomly"
+                    isSelected -> "Active ringtone"
+                    else -> "Tap to select"
+                },
                 style = MaterialTheme.typography.bodySmall,
             )
         },
