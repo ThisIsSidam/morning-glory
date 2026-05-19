@@ -9,9 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import app.morning.glory.ui.home.components.HomeAppBar
 
-enum class HomeView(val title: String) {
+enum class HomeView(val title: String?) {
     SLEEP("Sleep"),
-    NAP("Nap")
+    NAP("Nap"),
+    SETTINGS(null)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,7 +23,7 @@ fun HomeScreen() {
 
     Scaffold(
         topBar = { HomeAppBar(pagerState) }
-    )  { innerPadding ->
+    ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.padding(innerPadding)
@@ -33,6 +34,7 @@ fun HomeScreen() {
             when (view) {
                 HomeView.SLEEP -> SleepView()
                 HomeView.NAP -> NapView()
+                HomeView.SETTINGS -> SettingsView()
             }
         }
     }

@@ -1,18 +1,22 @@
-package app.morning.glory.ui.home.components.sheets
+package app.morning.glory.ui.home
 
 import android.content.SharedPreferences
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -20,26 +24,57 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.morning.glory.R
 import app.morning.glory.core.utils.AppPreferences
+import app.morning.glory.ui.home.components.sheets.OptionsTile
+import app.morning.glory.ui.home.components.sheets.QRCodeManagerSheetBody
+import app.morning.glory.ui.home.components.sheets.RingtoneManagerSheetBody
 
+enum class SettingsSheet {
+    QRSheet,
+    RingtoneSheet,
+    NONE
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OptionsSheet() {
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+fun SettingsView() {
+    var showSettingsSheet by remember { mutableStateOf(SettingsSheet.NONE) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    if (showSettingsSheet != SettingsSheet.NONE) {
+        ModalBottomSheet(
+            onDismissRequest = { showSettingsSheet = SettingsSheet.NONE },
+            sheetState = sheetState,
+        ) {
+            when (showSettingsSheet) {
+                SettingsSheet.QRSheet -> QRCodeManagerSheetBody()
+                SettingsSheet.RingtoneSheet -> RingtoneManagerSheetBody()
+                else -> {}
+            }
+        }
+    }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp, horizontal = 16.dp)
-            .padding(bottom = bottomPadding)
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
     ) {
-        Text(
-            text = "Options",
-            style = MaterialTheme.typography.headlineSmall,
+        OptionsTile(
+            title = "QR Code",
+            description = "Manage QR codes for dismissing alarms",
+            icon = Icons.Default.Lock,
+            onClick = { showSettingsSheet = SettingsSheet.QRSheet }
+        )
+        OptionsTile(
+            title = "Ringtones",
+            description = "Manage your alarm ringtones",
+            iconRes = R.drawable.outline_queue_music_24,
+            onClick = { showSettingsSheet = SettingsSheet.RingtoneSheet }
         )
         SnoozeOptionTile()
         SnoozeDurationTile()
@@ -66,6 +101,7 @@ fun SnoozeOptionTile() {
         title = "Snooze limit",
         description = "The max allowed number of snoozes",
         valueText = selectedSnoozeLimit.toString(),
+        iconRes = R.drawable.outline_snooze_24,
         onClick = { showPopup = true },
         trailingContent = {
             if (showPopup) {
@@ -119,6 +155,7 @@ fun SnoozeDurationTile() {
         title = "Snooze duration",
         description = "The duration of each snooze in minutes",
         valueText = "$selectedSnoozeDur min",
+        iconRes = R.drawable.round_pause_24,
         onClick = { showPopup = true },
         trailingContent = {
             if (showPopup) {
@@ -172,6 +209,7 @@ fun WakeCheckAlarmTimeTile() {
         title = "Wake check time",
         description = "How early the wake check notification should be sent",
         valueText = "$wakeCheckTime min",
+        iconRes = R.drawable.outline_today_24,
         onClick = { showPopup = true },
         trailingContent = {
             if (showPopup) {
