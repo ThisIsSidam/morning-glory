@@ -28,6 +28,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlin.math.roundToInt
 
 @Composable
 fun rememberPickerState() = remember { PickerState() }
@@ -67,9 +68,15 @@ fun Picker(
         )
     }
 
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
-            .map { index -> getItem(index + visibleItemsMiddle) }
+    LaunchedEffect(listState, items) {
+        snapshotFlow {
+            val itemHeight = itemHeightPixel.intValue
+            val index = listState.firstVisibleItemIndex
+            val offsetItems = if (itemHeight > 0) {
+                (listState.firstVisibleItemScrollOffset.toFloat() / itemHeight).roundToInt()
+            } else 0
+            getItem(index + offsetItems + visibleItemsMiddle)
+        }
             .distinctUntilChanged()
             .collect { item -> state.selectedItem = item }
     }

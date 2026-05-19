@@ -38,7 +38,7 @@ fun DurationPicker(
     ) {
         // Hours Picker
         Picker(
-            items = List(23) { it.toString() },
+            items = List(24) { it.toString() },
             startIndex = (initDuration / 60).toInt(),
             state = hourPickerState,
             visibleItemsCount = 7,
