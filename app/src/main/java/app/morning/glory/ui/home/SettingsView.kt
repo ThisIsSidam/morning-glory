@@ -9,14 +9,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -48,7 +53,7 @@ enum class SettingsSheet {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsView() {
+fun SettingsView(onBack: () -> Unit) {
     val context = LocalContext.current
     val isInitiallyUnrestricted = remember { context.isIgnoringBatteryOptimizations() }
     var showSettingsSheet by remember { mutableStateOf(SettingsSheet.NONE) }
@@ -67,38 +72,52 @@ fun SettingsView() {
         }
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-
-        // Battery tile is at top when attention is required..
-        // If not, it is placed in the bottom.
-        if (!isInitiallyUnrestricted) {
-            BatteryOptimizationTile()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Settings") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
         }
+    ) { innerPadding ->
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
 
-        OptionsTile(
-            title = "QR Code",
-            description = "Manage QR codes for dismissing alarms",
-            icon = Icons.Default.Lock,
-            onClick = { showSettingsSheet = SettingsSheet.QRSheet }
-        )
-        OptionsTile(
-            title = "Ringtones",
-            description = "Manage your alarm ringtones",
-            iconRes = R.drawable.outline_queue_music_24,
-            onClick = { showSettingsSheet = SettingsSheet.RingtoneSheet }
-        )
-        SnoozeOptionTile()
-        SnoozeDurationTile()
-        WakeCheckAlarmTimeTile()
+            // Battery tile is at top when attention is required..
+            // If not, it is placed in the bottom.
+            if (!isInitiallyUnrestricted) {
+                BatteryOptimizationTile()
+            }
 
-        if (isInitiallyUnrestricted) {
-            BatteryOptimizationTile()
+            OptionsTile(
+                title = "QR Code",
+                description = "Manage QR codes for dismissing alarms",
+                icon = Icons.Default.Lock,
+                onClick = { showSettingsSheet = SettingsSheet.QRSheet }
+            )
+            OptionsTile(
+                title = "Ringtones",
+                description = "Manage your alarm ringtones",
+                iconRes = R.drawable.outline_queue_music_24,
+                onClick = { showSettingsSheet = SettingsSheet.RingtoneSheet }
+            )
+            SnoozeOptionTile()
+            SnoozeDurationTile()
+            WakeCheckAlarmTimeTile()
+
+            if (isInitiallyUnrestricted) {
+                BatteryOptimizationTile()
+            }
         }
     }
 }
