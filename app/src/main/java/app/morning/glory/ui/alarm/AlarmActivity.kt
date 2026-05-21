@@ -10,7 +10,7 @@ import android.os.IBinder
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.core.view.WindowCompat
+import androidx.activity.enableEdgeToEdge
 import app.morning.glory.core.service.AlarmService
 import app.morning.glory.core.utils.AlarmType
 import app.morning.glory.core.utils.AppAlarmManager
@@ -51,13 +51,11 @@ class AlarmActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         AppPreferences.init(this)
 
         // Turn on the screen and show on lock screen
         turnScreenOnAndShowWhenLocked()
-
-        // To make activity edge-to-edge
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val alarmTypeString = intent.getStringExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY)
         val alarmType = AlarmType.valueOfOrNull(alarmTypeString) ?: AlarmType.NAP

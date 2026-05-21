@@ -2,27 +2,26 @@ package app.morning.glory.ui.alarm
 
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -68,16 +66,13 @@ fun AlarmScreen(
             .background(
                 Brush.linearGradient(
                     colors = listOf(
-                        Color(0xFF1F2937),
-                        Color(0xFF374151)
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.surface
                     )
                 )
             )
             .padding(24.dp)
     ) {
-        // Animation rings
-        AnimationRings()
-
         // Main content
         Column(
             modifier = Modifier
@@ -100,39 +95,58 @@ fun AlarmScreen(
                 letterSpacing = (-2).sp
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(0.5f))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 32.dp, vertical = 16.dp)
+                    .animateContentSize()
             ) {
                 if (alarmCode != null && alarmType == AlarmType.SLEEP) {
-                    ScanQRButton(alarmCode!!, Modifier.weight(1f), onDismiss)
+                    ScanQRButton(
+                        alarmCode = alarmCode!!,
+                        onDismiss = onDismiss,
+                        modifier = Modifier
+                            .height(60.dp)
+                            .widthIn(min = 200.dp, max = 360.dp)
+                            .fillMaxWidth(0.85f)
+                    )
                 } else {
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier
-                            .height(56.dp)
-                            .weight(1f)
+                            .height(60.dp)
+                            .widthIn(min = 200.dp, max = 360.dp)
+                            .fillMaxWidth(0.85f)
+                            .clip(RoundedCornerShape(24.dp)),
+                        shape = RoundedCornerShape(24.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.round_cancel_24),
-                            contentDescription = "Dismiss alarm icon",
+                            contentDescription = "Stop alarm icon",
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Dismiss", fontSize = 18.sp)
+                        Text("Stop", fontSize = 18.sp)
                     }
                 }
 
                 if (snoozeCount < AppPreferences.maxSnoozeCount) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     Button(
                         onClick = onSnooze,
                         modifier = Modifier
-                            .height(56.dp)
-                            .weight(1f)
+                            .height(60.dp)
+                            .widthIn(min = 200.dp, max = 360.dp)
+                            .fillMaxWidth(0.85f)
+                            .clip(RoundedCornerShape(24.dp)),
+                        shape = RoundedCornerShape(24.dp)
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.outline_snooze_24),
+                            imageVector = Icons.Filled.Snooze,
                             contentDescription = "Snooze alarm icon",
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
@@ -173,8 +187,8 @@ fun ScanQRButton(alarmCode: String, modifier: Modifier = Modifier, onDismiss: ()
             }
             barcodeLauncher.launch(options)
         },
-        modifier = modifier
-            .height(56.dp)
+        modifier = modifier.clip(RoundedCornerShape(24.dp)),
+        shape = RoundedCornerShape(24.dp)
     ) {
         Icon(
             painter = painterResource(id = R.drawable.outline_qr_code_2_24),
@@ -187,65 +201,19 @@ fun ScanQRButton(alarmCode: String, modifier: Modifier = Modifier, onDismiss: ()
 }
 
 @Composable
-fun AnimationRings() {
-    val infiniteTransition = rememberInfiniteTransition(label = "rings")
-
-    listOf(200.dp, 160.dp, 120.dp).forEachIndexed { index, size ->
-        val scale by infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.5f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, delayMillis = index * 500),
-                repeatMode = RepeatMode.Restart
-            ),
-            label = "ring_scale_$index"
-        )
-
-        val alpha by infiniteTransition.animateFloat(
-            initialValue = 0.3f,
-            targetValue = 0f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, delayMillis = index * 500),
-                repeatMode = RepeatMode.Restart
-            ),
-            label = "ring_alpha_$index"
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(size)
-                    .scale(scale)
-                    .alpha(alpha)
-                    .border(
-                        width = 1.dp,
-                        color = Color.White,
-                        shape = CircleShape
-                    )
-            )
-        }
-    }
-}
-
-@Composable
 fun AlarmIndicator() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Icon(
-            painter = painterResource(R.drawable.round_alarm_24),
+            painter = painterResource(R.mipmap.ic_launcher_foreground),
             contentDescription = "Alarm Active",
             tint = Color.White,
-            modifier = Modifier
-                .size(32.dp)
+            modifier = Modifier.size(32.dp)
         )
 
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(4.dp))
 
         Text(
             text = "Morning Glory",

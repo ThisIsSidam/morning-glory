@@ -53,6 +53,7 @@
             android:launchMode="singleTop"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
+            android:theme="@style/Theme.MorningGlory"
             android:turnScreenOn="true" />
 
         <activity
