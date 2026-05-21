@@ -227,7 +227,7 @@ fun SnoozeOptionTile() {
     OptionsTile(
         title = "Snooze limit",
         description = "The max allowed number of snoozes",
-        valueText = selectedSnoozeLimit.toString(),
+        valueText = if (selectedSnoozeLimit == 0) "None" else selectedSnoozeLimit.toString(),
         icon = Icons.Default.Snooze,
         onClick = { showPopup = true },
         trailingContent = {
@@ -237,11 +237,11 @@ fun SnoozeOptionTile() {
                     onDismissRequest = { showPopup = false },
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                 ) {
-                    (1..4).forEach { option ->
+                    (0..4).forEach { option ->
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    text = option.toString(),
+                                    text = if (option == 0) "None" else option.toString(),
                                     color = if (option == selectedSnoozeLimit)
                                         MaterialTheme.colorScheme.primary
                                     else
