@@ -2,6 +2,7 @@ package app.morning.glory.ui.home
 
 import android.app.Activity
 import android.text.format.DateFormat
+import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -51,17 +51,22 @@ fun NightClockView(onBack: () -> Unit) {
     // Dimming state (0f = bright, 0.95f = very dim)
     var dimAlpha by remember { mutableFloatStateOf(0f) }
 
-    // Immersive Mode: Hide Status and Nav bars
+    // Immersive Mode & Keep Screen On
     DisposableEffect(Unit) {
         val window = (context as? Activity)?.window ?: return@DisposableEffect onDispose {}
         val windowInsetsController = WindowCompat.getInsetsController(window, view)
 
+        // Hide bars
         windowInsetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
 
+        // Keep screen on (Prevent device timeout)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         onDispose {
             windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
@@ -93,82 +98,63 @@ fun NightClockView(onBack: () -> Unit) {
     ) {
         val isLandscape = this@BoxWithConstraints.maxWidth > this@BoxWithConstraints.maxHeight
 
-        // Dynamic scaling based on available dimensions
-        // - Base portrait: 360dp width
-        // - Base landscape: 450dp width
-        // - We cap the scale at 2.5x to prevent overflow on giant tablets/desktops
         val scaleFactor = if (isLandscape) {
             (maxWidth.value / 450f).coerceIn(1.5f, 2.5f)
         } else {
-            (maxWidth.value / 420f).coerceIn(1.0f, 2.0f)
+            (maxWidth.value / 400f).coerceIn(1.0f, 2.0f)
         }
 
-        // Center Clock and Day
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        // Clock + (AM/PM + Day)
+        Row(
+            verticalAlignment = Alignment.Bottom
         ) {
-            Row(
-                verticalAlignment = Alignment.Bottom
-            ) {
-                // Hour and Minutes
-                val timeFormat = if (is24HourFormat) "HH:mm" else "h:mm"
-                val timeText =
-                    SimpleDateFormat(timeFormat, Locale.getDefault()).format(currentTime.time)
+            // Hour and Minutes
+            val timeFormat = if (is24HourFormat) "HH:mm" else "hh:mm"
+            val timeText =
+                SimpleDateFormat(timeFormat, Locale.getDefault()).format(currentTime.time)
 
-                Text(
-                    text = timeText,
-                    fontSize = (100 * scaleFactor).sp,
-                    fontFamily = AppFontFamily.Orbitron,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                // AM/PM and Seconds
-                Column(
-                    modifier = Modifier.padding(
-                        bottom = (24 * scaleFactor).dp,
-                        start = (4 * scaleFactor).dp
-                    ),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    if (!is24HourFormat) {
-                        val amPm =
-                            if (currentTime.get(Calendar.AM_PM) == Calendar.AM) "AM" else "PM"
-                        Text(
-                            text = amPm,
-                            fontSize = (20 * scaleFactor).sp,
-                            fontFamily = AppFontFamily.Orbitron,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    val seconds =
-                        String.format(Locale.getDefault(), "%02d", currentTime.get(Calendar.SECOND))
-                    Text(
-                        text = seconds,
-                        fontSize = (30 * scaleFactor).sp,
-                        fontFamily = AppFontFamily.Orbitron,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                    )
-                }
-            }
-
-            // Day of Week - Bound tightly to the time digits
-            val dayOfWeek =
-                SimpleDateFormat("EEEE", Locale.getDefault()).format(currentTime.time).uppercase()
             Text(
-                text = dayOfWeek,
-                fontSize = (32 * scaleFactor).sp,
+                text = timeText,
+                fontSize = (80 * scaleFactor).sp,
                 fontFamily = AppFontFamily.Orbitron,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.offset(y = ((-24) * scaleFactor).dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.primary
             )
-        }
 
+            // AM/PM and Seconds
+            Column(
+                modifier = Modifier.padding(
+                    bottom = (24 * scaleFactor).dp,
+                    start = (4 * scaleFactor).dp
+                ),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                if (!is24HourFormat) {
+                    val amPm =
+                        if (currentTime.get(Calendar.AM_PM) == Calendar.AM) "AM" else "PM"
+                    Text(
+                        text = amPm,
+                        fontSize = (18 * scaleFactor).sp,
+                        fontFamily = AppFontFamily.Orbitron,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                // Day of Week
+                val dayOfWeek =
+                    SimpleDateFormat("EEE", Locale.getDefault()).format(currentTime.time)
+                        .uppercase()
+                Text(
+                    text = dayOfWeek,
+                    fontSize = (22 * scaleFactor).sp,
+                    fontFamily = AppFontFamily.Orbitron,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                )
+            }
+        }
         // Dimming Overlay (placed last to cover everything)
         Box(
             modifier = Modifier
