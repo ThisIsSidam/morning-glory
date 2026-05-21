@@ -1,11 +1,19 @@
 package app.morning.glory.ui.home
 
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -13,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.MoreTime
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material.icons.filled.Timelapse
@@ -34,9 +43,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -61,6 +72,14 @@ fun SettingsView(onBack: () -> Unit) {
     val isInitiallyUnrestricted = remember { context.isIgnoringBatteryOptimizations() }
     var showSettingsSheet by remember { mutableStateOf(SettingsSheet.NONE) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val versionName = remember {
+        try {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName
+        } catch (e: Exception) {
+            "NA"
+        }
+    }
 
     if (showSettingsSheet != SettingsSheet.NONE) {
         ModalBottomSheet(
@@ -120,6 +139,38 @@ fun SettingsView(onBack: () -> Unit) {
 
             if (isInitiallyUnrestricted) {
                 BatteryOptimizationTile()
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+                    .clickable {
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            "https://github.com/thisissidam/morning-glory".toUri()
+                        )
+                        context.startActivity(intent)
+                    },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Public,
+                    contentDescription = "GitHub",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                if (versionName != "NA") {
+                    Text(
+                        text = "v$versionName",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                }
             }
         }
     }
