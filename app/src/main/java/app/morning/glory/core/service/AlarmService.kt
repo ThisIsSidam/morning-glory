@@ -31,9 +31,12 @@ class AlarmService : Service() {
     override fun onBind(intent: Intent?): IBinder = localBinder
 
     private lateinit var appSoundPlayer: AppSoundPlayer
-    private var isRunning = false
-    private lateinit var alarmType: AlarmType
-    private var snoozeCount: Int = 0
+
+    companion object {
+        var isRunning = false
+        var activeAlarmType: AlarmType? = null
+        var activeSnoozeCount: Int = 0
+    }
 
     /// Creates the service and initiate the alarm sound player
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -53,14 +56,14 @@ class AlarmService : Service() {
             AppPreferences.init(applicationContext)
 
             val alarmTypeString = intent.getStringExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY)
-            alarmType = AlarmType.valueOfOrNull(alarmTypeString) ?: run {
+            activeAlarmType = AlarmType.valueOfOrNull(alarmTypeString) ?: run {
                 // Stop service if alarm type wasn't received.. bad intent
                 appSoundPlayer.stop()
                 stopSelf()
                 return START_NOT_STICKY
             }
 
-            snoozeCount = intent.getIntExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, 2)
+            activeSnoozeCount = intent.getIntExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, 0)
 
             // Start in foreground with a notification
             startForeground(111, createNotification())
@@ -104,13 +107,14 @@ class AlarmService : Service() {
         appSoundPlayer.release()
 
         // Clear the saved alarm time and reschedule in case of sleep alarm
-        when (alarmType) {
+        when (activeAlarmType) {
             AlarmType.SLEEP -> {
                 AppPreferences.sleepAlarmTime = null
                 manageReschedule()
             }
 
             AlarmType.NAP -> AppPreferences.napAlarmTime = null
+            null -> {}
         }
 
 
@@ -118,6 +122,8 @@ class AlarmService : Service() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
         isRunning = false
+        activeAlarmType = null
+        activeSnoozeCount = 0
     }
 
     /// Check for daily time presence and set new alarm
@@ -140,17 +146,24 @@ class AlarmService : Service() {
     fun snoozeAndDismissAlarm() {
         if (!isRunning) return
 
-        Log.d("AlarmService", "Snooze count: $snoozeCount")
+        Log.d("AlarmService", "Snooze count: $activeSnoozeCount")
         appSoundPlayer.stop()
 
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, AppPreferences.snoozeDurationMinutes)
-        AppAlarmManager.snoozeAlarm(applicationContext, time, alarmType, snoozeCount + 1)
+        AppAlarmManager.snoozeAlarm(
+            applicationContext,
+            time,
+            activeAlarmType!!,
+            activeSnoozeCount + 1
+        )
 
         // Stop foreground and then service
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
         isRunning = false
+        activeAlarmType = null
+        activeSnoozeCount = 0
     }
 
     /// Notification for foreground service and the Alarm
@@ -158,8 +171,8 @@ class AlarmService : Service() {
 
         // Intent to open the AlarmActivity when the notification is clicked
         val fullScreenIntent = Intent(this, AlarmActivity::class.java)
-            .putExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY, alarmType.name)
-            .putExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, snoozeCount)
+            .putExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY, activeAlarmType?.name)
+            .putExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, activeSnoozeCount)
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this,
             0,
