@@ -15,12 +15,17 @@ singletons for core logic.
 - **`AppAlarmManager`**: A utility singleton for scheduling, snoozing, and cancelling alarms via the
   Android `AlarmManager`. It handles both "Sleep" and "Nap" alarm types.
 - **`AlarmService`**: A foreground service triggered when an alarm goes off. It manages sound
-  playback (`AppSoundPlayer`) and shows the alarm notification.
+  playback (`AppSoundPlayer`), haptic feedback (vibrations), and shows the alarm notification.
 - **`AppSoundPlayer`**: A unified class for handling audio playback (alarms and ringtone previews)
   using a single `MediaPlayer` instance.
-- **`AlarmActivity`**: A full-screen activity shown when an alarm triggers, providing the UI for
-  dismissal (including QR scanning) and snoozing.
-- **`MainActivity`**: The primary entry point, handling permissions and hosting the `HomeScreen`.
+- **`AlarmActivity`**: A full-screen, edge-to-edge activity shown when an alarm triggers. It provides
+  the UI for dismissal (including QR scanning) and snoozing, and blocks system navigation until
+  handled.
+- **`NightClockView`**: A dedicated fullscreen bedside mode with immersive UI, adaptive scaling for
+  various screen sizes, and gesture-based dimming controls.
+- **`SettingsView`**: A standalone screen for managing all app preferences and permissions.
+- **`MainActivity`**: The primary entry point, handling permissions, redirects for active alarms,
+  and hosting the `HomeScreen`.
 - **`ScannerActivity`**: A full-screen activity used to scan QR codes.
 
 ### Data Flow
@@ -55,12 +60,14 @@ singletons for core logic.
 - All UI should be built using Jetpack Compose.
 - Follow the established theme in `ui/theme/`.
 - Use the shared components in `shared/components/` for consistency.
+- **Immersive Mode**: Full-screen views like the Night Clock utilize `WindowInsetsControllerCompat` to hide system bars and `FLAG_KEEP_SCREEN_ON` to prevent timeouts.
+- **Adaptive Scaling**: Use `BoxWithConstraints` and dynamic scale factors to ensure UI elements scale elegantly from small phones to large tablets.
 
 ### Alarm Logic
 
-- Always use `AppAlarmManager` for scheduling or cancelling alarms to ensure consistent behavior (
-  e.g., updating preferences, handling pre-alarm notifications).
-- Ensure `AlarmType` is used to distinguish between Sleep and Nap alarms.
+- Always use `AppAlarmManager` for scheduling or cancelling alarms to ensure consistent behavior.
+- **Vibration**: `AlarmService` manages repeating vibration patterns based on the user's selected mode (None, Light, Heavy).
+- **Enforcement**: Active alarms are tracked globally; if the app is opened while an alarm is ringing, it automatically redirects to the `AlarmActivity`.
 
 ### Coding Conventions
 
@@ -84,6 +91,5 @@ singletons for core logic.
 
 ## Future Roadmap
 
-- **Random Ringtone**: Support for selecting a random sound from the imported list.
 - **Custom Images**: Allowing users to set a custom background for the `AlarmScreen`.
 - **NFC Support**: Implementing NFC tag scanning as an alternative dismissal method.

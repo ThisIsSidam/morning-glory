@@ -6,30 +6,31 @@ you to decide.
 
 ## Images
 
-<img src="screenshots/Screenshot_1.jpg" width="200" /> <img src="screenshots/Screenshot_2.jpg" width="200" /> 
+<img src="screenshots/sleep-view.png" width="200" /> <img src="screenshots/nap-view.png" width="200" /> <img src="screenshots/settings-view.png" width="200" /> <img src="screenshots/clock-view.png" width="200" /> <img src="screenshots/alarm-view.png" width="200" />  
 
 ## Features
 
 * **Two Dedicated Alarms:** Simplicity is key. The app features two persistent alarms:
-    * **Sleep:** For your main nightly rest.
-    * **Nap:** For short power naps during the day.
-    * *No new alarms can be created, reducing clutter and promoting a consistent sleep schedule.*
+    * **Sleep:** For your main nightly rest. Supports "At" (specific time) and "In" (duration)
+      modes.
+    * **Nap:** Four customizable quick-access nap durations.
+    * *No new alarms can be created, promoting a focused and consistent routine.*
 
-* **Custom Ringtones:** Wake up to the sounds you love. The sounds are imported from Android
-  Setting's ringtone picker, so you can import those and your own ones if they are there.
+* **Night Clock:** A dedicated immersive bedside mode.
+    * **Gesture Controls:** Vertical swipes allow you to dim or brighten the screen perfectly for
+      night use.
+
+* **Custom & Random Ringtones:** Wake up to sounds you love. Import any sound from your phone.
+  Enable **Randomize Ringtones** to have a different sound picked for every alarm, keeping your
+  wake-up experience fresh.
 
 * **QR Code Lock:** For the heavy sleepers! To dismiss an alarm, you must scan a pre-selected QR
-  code. Place the QR code in another room (like your kitchen or bathroom) to force yourself out of
-  bed.
+  code. Place it in another room to force yourself out of bed.
 
 ## Upcoming Features
 
-* **Random Ringtone:** A feature to randomly select a ringtone from your imported list for each
-  alarm, so you don't destroy your loved song or get bored out of one!
-* **Custom Alarm Screen Image:** Personalize your wake-up screen by adding your own image. See a
-  picture of your pet, a loved one, or something to motivate you to wake up.
-* **NFC locks:** Another way to lock the dismiss button by having to tap an NFC tag. Similar but
-  more convinient than QR code locks.
+* **Custom Alarm Screen Image:** Personalize your wake-up screen by adding your own image.
+* **NFC locks:** Another way to lock the dismiss button by having to tap an NFC tag.
 
 ## Extra
 
