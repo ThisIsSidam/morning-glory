@@ -31,6 +31,7 @@ you to decide.
 
 * **Custom Alarm Screen Image:** Personalize your wake-up screen by adding your own image.
 * **NFC locks:** Another way to lock the dismiss button by having to tap an NFC tag.
+* **Weekday Modes:** Selection of specific days to repeat the alarm on.
 
 ## Extra
 
