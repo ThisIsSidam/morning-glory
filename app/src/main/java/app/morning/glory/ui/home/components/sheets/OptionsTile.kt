@@ -49,24 +49,27 @@ fun OptionsTile(
             ),
             leadingContent = if (icon != null || iconRes != null) {
                 {
-                    if (icon != null) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    } else if (iconRes != null) {
-                        Icon(
-                            painter = painterResource(iconRes),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                    Box(modifier = Modifier.padding(vertical = 8.dp)) {
+                        if (icon != null) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        } else if (iconRes != null) {
+                            Icon(
+                                painter = painterResource(iconRes),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             } else null,
             headlineContent = {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = Modifier.padding(vertical = 8.dp)
                 ) {
                     Text(
                         text = title,
@@ -85,7 +88,10 @@ fun OptionsTile(
             },
             trailingContent = if (valueText != null || trailingContent != null) {
                 {
-                    Box(contentAlignment = Alignment.CenterEnd) {
+                    Box(
+                        contentAlignment = Alignment.CenterEnd,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
                         if (valueText != null) {
                             Box(
                                 modifier = Modifier
