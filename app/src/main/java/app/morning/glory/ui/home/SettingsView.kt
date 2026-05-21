@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.BatteryAlert
+import androidx.compose.material.icons.filled.MoreTime
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.Snooze
+import androidx.compose.material.icons.filled.Timelapse
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import app.morning.glory.R
 import app.morning.glory.core.extensions.isIgnoringBatteryOptimizations
 import app.morning.glory.core.extensions.requestIgnoreBatteryOptimizations
 import app.morning.glory.core.extensions.toast
@@ -102,13 +105,13 @@ fun SettingsView(onBack: () -> Unit) {
             OptionsTile(
                 title = "QR Code",
                 description = "Manage QR codes for dismissing alarms",
-                icon = Icons.Default.Lock,
+                icon = Icons.Default.QrCode,
                 onClick = { showSettingsSheet = SettingsSheet.QRSheet }
             )
             OptionsTile(
                 title = "Ringtones",
                 description = "Manage your alarm ringtones",
-                iconRes = R.drawable.outline_queue_music_24,
+                icon = Icons.AutoMirrored.Filled.QueueMusic,
                 onClick = { showSettingsSheet = SettingsSheet.RingtoneSheet }
             )
             SnoozeOptionTile()
@@ -144,7 +147,7 @@ fun BatteryOptimizationTile() {
         title = "Battery Optimization",
         description = "Recommended for reliable alarm triggering",
         valueText = if (isIgnoringBatteryOptimizations) "Unrestricted" else "Allow",
-        icon = Icons.Default.Info,
+        icon = Icons.Default.BatteryAlert,
         onClick = {
             if (!isIgnoringBatteryOptimizations) {
                 context.requestIgnoreBatteryOptimizations()
@@ -174,7 +177,7 @@ fun SnoozeOptionTile() {
         title = "Snooze limit",
         description = "The max allowed number of snoozes",
         valueText = selectedSnoozeLimit.toString(),
-        iconRes = R.drawable.outline_snooze_24,
+        icon = Icons.Default.Snooze,
         onClick = { showPopup = true },
         trailingContent = {
             if (showPopup) {
@@ -228,7 +231,7 @@ fun SnoozeDurationTile() {
         title = "Snooze duration",
         description = "The duration of each snooze in minutes",
         valueText = "$selectedSnoozeDur min",
-        iconRes = R.drawable.round_pause_24,
+        icon = Icons.Default.MoreTime,
         onClick = { showPopup = true },
         trailingContent = {
             if (showPopup) {
@@ -282,7 +285,7 @@ fun WakeCheckAlarmTimeTile() {
         title = "Wake check time",
         description = "How early the wake check notification should be sent",
         valueText = "$wakeCheckTime min",
-        iconRes = R.drawable.outline_today_24,
+        icon = Icons.Default.Timelapse,
         onClick = { showPopup = true },
         trailingContent = {
             if (showPopup) {
