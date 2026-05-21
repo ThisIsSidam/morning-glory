@@ -257,4 +257,10 @@ object AppPreferences {
             ?: (7 * 60 + 30).minutes
         set(value) = prefs.edit { putDuration(LAST_USED_SLEEP_IN_DURATION_KEY, value) }
 
+    // -- -- Vibration Preferences -- -- //
+
+    const val VIBRATION_MODE_KEY = "vibration_mode"
+    var vibrationMode: String
+        get() = prefs.getString(VIBRATION_MODE_KEY, "Light") ?: "Light"
+        set(value) = prefs.edit { putString(VIBRATION_MODE_KEY, value) }
 }

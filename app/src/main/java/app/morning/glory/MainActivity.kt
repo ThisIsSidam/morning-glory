@@ -34,7 +34,8 @@ class MainActivity : ComponentActivity() {
                 val alarmIntent = Intent(this, AlarmActivity::class.java).apply {
                     putExtra(AppAlarmManager.ALARM_TYPE_EXTRA_KEY, alarmType.name)
                     putExtra(AppAlarmManager.SNOOZE_COUNT_EXTRA_KEY, snoozeCount)
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
                 startActivity(alarmIntent)
                 finish()

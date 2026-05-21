@@ -7,6 +7,9 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import app.morning.glory.core.audio.AppSoundPlayer
@@ -31,6 +34,7 @@ class AlarmService : Service() {
     override fun onBind(intent: Intent?): IBinder = localBinder
 
     private lateinit var appSoundPlayer: AppSoundPlayer
+    private var vibrator: Vibrator? = null
 
     companion object {
         var isRunning = false
@@ -75,6 +79,9 @@ class AlarmService : Service() {
             // Start playing the alarm sound
             playAlarmSound()
 
+            // Start vibration
+            startVibration()
+
             isRunning = true
         }
 
@@ -84,6 +91,31 @@ class AlarmService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         dismissAlarm()
+    }
+
+    private fun startVibration() {
+        if (AppPreferences.vibrationMode == "None") return
+
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(VIBRATOR_SERVICE) as Vibrator
+        }
+
+        val pattern = when (AppPreferences.vibrationMode) {
+            "Heavy" -> longArrayOf(0, 800, 400)
+            else -> longArrayOf(0, 400, 800) // Light
+        }
+
+        vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
+    }
+
+    private fun stopVibration() {
+        vibrator?.cancel()
+        vibrator = null
     }
 
     /// If randomize is on, we pick a random ringtone and play
@@ -105,6 +137,7 @@ class AlarmService : Service() {
         if (!isRunning) return
 
         appSoundPlayer.release()
+        stopVibration()
 
         // Clear the saved alarm time and reschedule in case of sleep alarm
         when (activeAlarmType) {
@@ -148,6 +181,7 @@ class AlarmService : Service() {
 
         Log.d("AlarmService", "Snooze count: $activeSnoozeCount")
         appSoundPlayer.stop()
+        stopVibration()
 
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, AppPreferences.snoozeDurationMinutes)

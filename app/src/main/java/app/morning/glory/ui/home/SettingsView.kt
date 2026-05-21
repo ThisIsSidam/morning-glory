@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material.icons.filled.Timelapse
+import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -135,6 +136,7 @@ fun SettingsView(onBack: () -> Unit) {
             )
             SnoozeOptionTile()
             SnoozeDurationTile()
+            VibrationOptionTile()
             WakeCheckAlarmTimeTile()
 
             if (isInitiallyUnrestricted) {
@@ -316,6 +318,62 @@ fun SnoozeDurationTile() {
         }
     )
 }
+
+
+@Composable
+fun VibrationOptionTile() {
+    var showPopup by remember { mutableStateOf(false) }
+    var vibrationMode by remember { mutableStateOf(AppPreferences.vibrationMode) }
+
+    DisposableEffect(Unit) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == AppPreferences.VIBRATION_MODE_KEY) {
+                vibrationMode = AppPreferences.vibrationMode
+            }
+        }
+        AppPreferences.registerListener(listener)
+        onDispose { AppPreferences.unregisterListener(listener) }
+    }
+
+    OptionsTile(
+        title = "Vibration",
+        description = "Set vibration mode for the alarm",
+        valueText = vibrationMode,
+        icon = Icons.Default.Vibration,
+        onClick = { showPopup = true },
+        trailingContent = {
+            if (showPopup) {
+                DropdownMenu(
+                    expanded = true,
+                    onDismissRequest = { showPopup = false },
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                ) {
+                    listOf("None", "Light", "Heavy").forEach { option ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = option,
+                                    color = if (option == vibrationMode)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.onSurface
+                                )
+                            },
+                            onClick = {
+                                AppPreferences.vibrationMode = option
+                                showPopup = false
+                            },
+                            modifier = if (option == vibrationMode)
+                                Modifier.background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                            else Modifier
+                        )
+                    }
+                }
+            }
+        }
+    )
+}
+
 
 @Composable
 fun WakeCheckAlarmTimeTile() {
