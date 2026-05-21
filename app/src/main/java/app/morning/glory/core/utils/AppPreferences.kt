@@ -239,4 +239,22 @@ object AppPreferences {
         set(value) {
             prefs.edit { putInt(WAKE_CHECK_ALARM_TIME_KEY, value) }
         }
+
+
+    // -- -- Last Used Preferences -- -- //
+
+    const val LAST_USED_SLEEP_TIME_KEY = "last_used_sleep_time"
+    var lastUsedSleepTime: LocalTime
+        get() = prefs.getLocalTime(LAST_USED_SLEEP_TIME_KEY, LocalTime.of(8, 0)) ?: LocalTime.of(
+            8,
+            0
+        )
+        set(value) = prefs.edit { putLocalTime(LAST_USED_SLEEP_TIME_KEY, value) }
+
+    const val LAST_USED_SLEEP_IN_DURATION_KEY = "last_used_sleep_in_duration"
+    var lastUsedSleepInDuration: Duration
+        get() = prefs.getDuration(LAST_USED_SLEEP_IN_DURATION_KEY, (7 * 60 + 30).minutes)
+            ?: (7 * 60 + 30).minutes
+        set(value) = prefs.edit { putDuration(LAST_USED_SLEEP_IN_DURATION_KEY, value) }
+
 }

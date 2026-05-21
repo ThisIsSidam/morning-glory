@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.morning.glory.core.extensions.toLocalTime
 import app.morning.glory.core.utils.AppPreferences
 import app.morning.glory.shared.components.RadioButtonGroup
 import app.morning.glory.ui.home.components.ButtonSection
@@ -32,6 +33,7 @@ import app.morning.glory.ui.home.components.DurationPicker
 import app.morning.glory.ui.home.components.SleepHeader
 import app.morning.glory.ui.home.components.TimePicker
 import java.util.Calendar
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SleepView(
@@ -39,18 +41,31 @@ fun SleepView(
 ) {
     val context = LocalContext.current
     val initialTime = AppPreferences.sleepAlarmTime
-    var selectedTime by remember { mutableStateOf(initialTime ?: Calendar.getInstance()) }
+    var selectedTime by remember {
+        mutableStateOf(initialTime ?: Calendar.getInstance().apply {
+            val lastUsed = AppPreferences.lastUsedSleepTime
+            set(Calendar.HOUR_OF_DAY, lastUsed.hour)
+            set(Calendar.MINUTE, lastUsed.minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            if (timeInMillis < System.currentTimeMillis()) {
+                add(Calendar.DAY_OF_YEAR, 1)
+            }
+        })
+    }
     val is24HourFormat by remember { mutableStateOf(DateFormat.is24HourFormat(context)) }
     var showTimePicker by remember { mutableStateOf(true) }
 
     val onTimeSelected: (Calendar) -> Unit = { time ->
         selectedTime = time
+        AppPreferences.lastUsedSleepTime = time.toLocalTime()
     }
 
     val onDurationSelected: (Long) -> Unit = { durationMs ->
         selectedTime = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis() + durationMs
         }
+        AppPreferences.lastUsedSleepInDuration = durationMs.milliseconds
     }
 
     Column(
@@ -106,7 +121,7 @@ fun SleepView(
                         )
                     } else {
                         DurationPicker(
-                            initDuration = 7 * 60 + 30,
+                            initDuration = AppPreferences.lastUsedSleepInDuration.inWholeMinutes.toInt(),
                             onDurationSelected = onDurationSelected
                         )
                     }
